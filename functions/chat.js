@@ -91,7 +91,6 @@ Regras:
 2. Respostas curtas e diretas, sem explicações longas.
 3. Sem asteriscos, sem símbolos, sem formatação.
 4. Forneça 3-4 estratégias práticas apenas.
-5. Ao final liste: Referências: REF-1, REF-3 (apenas as usadas)
 
 PERGUNTA:
 ${q}
