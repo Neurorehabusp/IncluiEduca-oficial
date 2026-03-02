@@ -116,20 +116,20 @@ Resposta concisa:`;
       .trim();
 
     const referencesMatch = answer.match(/Referências?:\s*([^\n]+)/i);
-    let usedRefs = [];
+let usedRefs = [];
 
-    if (referencesMatch) {
-      const refText = referencesMatch[1];
-      const refMatches = refText.match(/REF-\d+/g) || [];
-      usedRefs = refMatches;
-      answer = answer.replace(/Referências?:\s*[^\n]+/i, "").trim();
-    }
+if (referencesMatch) {
+  const refText = referencesMatch[1];
+  const refMatches = refText.match(/REF-\d+/g) || [];
+  usedRefs = refMatches;
+  answer = answer.replace(/Referências?:\s*[^\n]+/i, "").trim();
+}
 
-    if (usedRefs.length === 0) {
-      usedRefs = refs.slice(0, 3).map((r) => r.ref);
-    }
+if (usedRefs.length === 0) {
+  usedRefs = refs.slice(0, 3).map(r => r.ref);
+}
 
-    const filteredRefs = refs.filter((r) => usedRefs.includes(r.ref));
+const filteredRefs = refs.filter(r => usedRefs.includes(r.ref));
 
     return new Response(
       JSON.stringify({ answer, refs: filteredRefs }),
