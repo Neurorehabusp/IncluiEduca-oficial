@@ -107,10 +107,10 @@ Resposta concisa:`;
       temperature: 0.4,
     });
 
-    let answer = String(aiResp.response || "")
+   let answer = String(aiResp.response || "")
       .replace(/\*\*/g, "")
       .replace(/\*/g, "")
-      .replace(/\d+\.\s\*\*/g, (m) => m.replace(/\*\*/g, ""))
+      .replace(/\d+\.\s\*\*/g, "")
       .replace(/#{1,6}\s/g, "")
       .replace(/[_`#~]/g, "")
       .trim();
