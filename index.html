@@ -4,145 +4,65 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Oficina de Ideação</title>
-
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
   <style>
     body { box-sizing: border-box; }
     * { font-family: 'Outfit', sans-serif; }
-
     .phase-card { transition: all 0.3s ease; }
     .phase-card:hover { transform: translateY(-2px); }
     .phase-card.active { box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35); border-color: rgb(99,102,241) !important; }
-
     .fade-in { animation: fadeIn 0.35s ease-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
     .pulse-dot { animation: pulse 2s infinite; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
     .toast { animation: slideIn 0.3s ease-out; }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
     .spinner { animation: spin 1s linear infinite; }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   </style>
 </head>
-
 <body class="h-full bg-gray-50 text-gray-900 overflow-auto">
   <div id="app" class="w-full min-h-full flex flex-col">
-
-    <!-- Header -->
     <header class="bg-white border-b-4 border-indigo-500 px-4 py-6 shadow-md">
       <div class="max-w-6xl mx-auto">
         <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-1">🎨 Oficina de Ideação</h1>
-        <p class="text-gray-600 text-sm md:text-base">
-          Processo criativo estruturado para desenvolvimento de soluções
-        </p>
+        <p class="text-gray-600 text-sm md:text-base">Processo criativo estruturado para desenvolvimento de soluções</p>
       </div>
     </header>
-
-    <!-- Main -->
     <main class="flex-1 p-4 md:p-6">
       <div class="max-w-6xl mx-auto">
-
-        <!-- Session Controls -->
         <div class="bg-white rounded-xl p-4 mb-6 flex flex-wrap gap-3 items-center shadow-md border border-gray-200">
-          <input
-            type="text"
-            id="session-name"
-            placeholder="Nome da sessão..."
-            class="flex-1 min-w-48 bg-gray-50 border-2 border-gray-300 rounded-lg px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500"
-          />
-
-          <button id="btn-save" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2">
-            <span>💾</span> Salvar Sessão
-          </button>
-
-          <button id="btn-load" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2">
-            <span>📂</span> Carregar Sessão
-          </button>
-
-          <button id="btn-pdf" class="bg-fuchsia-600 hover:bg-fuchsia-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2">
-            <span>📄</span> Gerar PDF
-          </button>
+          <input type="text" id="session-name" placeholder="Nome da sessão..." class="flex-1 min-w-48 bg-gray-50 border-2 border-gray-300 rounded-lg px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500" />
+          <button id="btn-save" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"><span>💾</span> Salvar Sessão</button>
+          <button id="btn-load" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"><span>📂</span> Carregar Sessão</button>
+          <button id="btn-pdf" class="bg-fuchsia-600 hover:bg-fuchsia-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"><span>📄</span> Gerar PDF</button>
         </div>
-
-        <!-- Phases Navigation -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-          <button data-phase="persona" class="phase-card active bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm">
-            <div class="text-2xl mb-1">👤</div>
-            <div class="text-xs font-medium text-indigo-600">1. Persona</div>
-          </button>
-
-          <button data-phase="motivadores" class="phase-card bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm">
-            <div class="text-2xl mb-1">🔥</div>
-            <div class="text-xs font-medium text-indigo-600">2. Motivadores</div>
-          </button>
-
-          <button data-phase="problemas" class="phase-card bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm">
-            <div class="text-2xl mb-1">🚧</div>
-            <div class="text-xs font-medium text-indigo-600">3. Problemas</div>
-          </button>
-
-          <button data-phase="desenvolvimento" class="phase-card bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm">
-            <div class="text-2xl mb-1">💡</div>
-            <div class="text-xs font-medium text-indigo-600">4. Desenvolvimento</div>
-          </button>
-
-          <button data-phase="visao" class="phase-card bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm">
-            <div class="text-2xl mb-1">🔮</div>
-            <div class="text-xs font-medium text-indigo-600">5. Visão</div>
-          </button>
-
-          <button data-phase="solucao" class="phase-card bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm">
-            <div class="text-2xl mb-1">🎯</div>
-            <div class="text-xs font-medium text-indigo-600">6. Solução</div>
-          </button>
+          <button data-phase="persona" class="phase-card active bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm"><div class="text-2xl mb-1">👤</div><div class="text-xs font-medium text-indigo-600">1. Persona</div></button>
+          <button data-phase="motivadores" class="phase-card bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm"><div class="text-2xl mb-1">🔥</div><div class="text-xs font-medium text-indigo-600">2. Motivadores</div></button>
+          <button data-phase="problemas" class="phase-card bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm"><div class="text-2xl mb-1">🚧</div><div class="text-xs font-medium text-indigo-600">3. Problemas</div></button>
+          <button data-phase="desenvolvimento" class="phase-card bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm"><div class="text-2xl mb-1">💡</div><div class="text-xs font-medium text-indigo-600">4. Desenvolvimento</div></button>
+          <button data-phase="visao" class="phase-card bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm"><div class="text-2xl mb-1">🔮</div><div class="text-xs font-medium text-indigo-600">5. Visão</div></button>
+          <button data-phase="solucao" class="phase-card bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm"><div class="text-2xl mb-1">🎯</div><div class="text-xs font-medium text-indigo-600">6. Solução</div></button>
         </div>
-
-        <!-- Content Grid -->
         <div class="grid lg:grid-cols-2 gap-6">
-
-          <!-- Left: Phase + Ideas -->
           <div class="space-y-4">
-
-            <!-- Phase Content -->
             <div id="phase-content" class="bg-white rounded-xl p-5 border-2 border-gray-300 shadow-md fade-in"></div>
-
-            <!-- Ideas Panel -->
             <div class="bg-white rounded-xl p-5 border-2 border-gray-300 shadow-md">
-              <h3 class="font-semibold text-lg mb-3 flex items-center gap-2 text-gray-900">
-                <span class="text-xl">📝</span> Minhas Ideias e Anotações
-              </h3>
-
-              <textarea
-                id="ideas-field"
-                placeholder="Registre suas ideias, insights e anotações aqui..."
-                class="w-full h-32 bg-gray-50 border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 resize-none"
-              ></textarea>
-
+              <h3 class="font-semibold text-lg mb-3 flex items-center gap-2 text-gray-900"><span class="text-xl">📝</span> Minhas Ideias e Anotações</h3>
+              <textarea id="ideas-field" placeholder="Registre suas ideias, insights e anotações aqui..." class="w-full h-32 bg-gray-50 border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 resize-none"></textarea>
               <div class="flex gap-2 mt-3">
-                <button id="btn-add-idea" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-                  + Adicionar Ideia
-                </button>
-                <button id="btn-clear-ideas" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium transition">
-                  Limpar
-                </button>
+                <button id="btn-add-idea" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">+ Adicionar Ideia</button>
+                <button id="btn-clear-ideas" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium transition">Limpar</button>
               </div>
-
               <div id="ideas-list" class="mt-4 space-y-2 max-h-48 overflow-y-auto"></div>
             </div>
           </div>
-
-          <!-- Right: Real AI Chat -->
           <div class="bg-white rounded-xl border-2 border-gray-300 shadow-md flex flex-col h-[500px]">
             <div class="p-4 border-b-2 border-gray-300 flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                <span class="text-xl">🤖</span>
-              </div>
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center"><span class="text-xl">🤖</span></div>
               <div>
                 <h3 class="font-semibold text-gray-900">Assistente (Literatura científica)</h3>
                 <p class="text-xs text-gray-600">Pergunte e eu respondo com síntese + referências</p>
@@ -152,37 +72,22 @@
                 <span class="text-xs text-emerald-600 font-medium">Online</span>
               </div>
             </div>
-
             <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
               <div class="flex gap-3">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-                  <span class="text-sm">🤖</span>
-                </div>
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0"><span class="text-sm">🤖</span></div>
                 <div class="bg-white border-2 border-gray-300 rounded-xl rounded-tl-none p-3 max-w-[85%] shadow-sm">
-                  <p class="text-sm text-gray-800">
-                    Olá! Descreva seu caso (idade, contexto, objetivo e dificuldade) e eu vou sugerir estratégias baseadas em literatura — com referências no final.
-                  </p>
+                  <p class="text-sm text-gray-800">Olá! Descreva seu caso (idade, contexto, objetivo e dificuldade) e eu vou sugerir estratégias baseadas em literatura — com referências no final.</p>
                 </div>
               </div>
             </div>
-
             <div class="p-4 border-t-2 border-gray-300">
               <div class="flex gap-2">
-                <input
-                  type="text"
-                  id="chat-input"
-                  placeholder="Descreva seu caso ou faça uma pergunta..."
-                  class="flex-1 bg-gray-50 border-2 border-gray-300 rounded-lg px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500"
-                />
-                <button id="btn-send" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center justify-center">
-                  <span id="send-icon">➤</span>
-                </button>
+                <input type="text" id="chat-input" placeholder="Descreva seu caso ou faça uma pergunta..." class="flex-1 bg-gray-50 border-2 border-gray-300 rounded-lg px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500" />
+                <button id="btn-send" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center justify-center"><span id="send-icon">➤</span></button>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- Modal: sessions -->
         <div id="sessions-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
           <div class="bg-white rounded-xl p-6 max-w-lg w-full mx-4 max-h-[80%] overflow-auto shadow-2xl border-2 border-gray-300">
             <div class="flex justify-between items-center mb-4">
@@ -194,538 +99,47 @@
             </div>
           </div>
         </div>
-
-        <!-- Toasts -->
         <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
-
-        <!-- Footer -->
         <footer class="mt-8 text-center text-gray-500 text-xs pb-4">
-          <p>
-            Este aplicativo está sob licença
-            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.pt_BR" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline font-medium">
-              CC BY-NC-SA 4.0
-            </a>
-          </p>
+          <p>Este aplicativo está sob licença <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.pt_BR" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline font-medium">CC BY-NC-SA 4.0</a></p>
           <p class="mt-1">Uso livre para fins educacionais e não comerciais</p>
         </footer>
-
       </div>
     </main>
   </div>
-
+  <script src="https://cdn.jsdelivr.net/npm/include-html@1.0.0/include.min.js"></script>
   <script>
-    // ========= CONFIG =========
-    const WORKER_CHAT_URL = "https://incluicanva.yasminsthtavares.workers.dev/chat"; // troque se necessário
-
-    // ========= DATA: phases =========
+    const WORKER_CHAT_URL = "https://incluicanva.yasminsthtavares.workers.dev/chat";
     const phasesData = {
-      persona: {
-        title: "👤 Criação da Persona",
-        description: "Construa um personagem que representa o usuário-alvo (criança/aluno, professor, família etc.).",
-        fields: [
-          { id: "persona-nome", label: "Nome da Persona", placeholder: "Ex: Ana" },
-          { id: "persona-idade", label: "Idade", placeholder: "Ex: 6 anos" },
-          { id: "persona-contexto", label: "Contexto", placeholder: "Ex: Educação infantil, turma de 20 alunos...", type: "textarea" },
-          { id: "persona-necessidades", label: "Necessidades", placeholder: "Quais são as principais necessidades?", type: "textarea" },
-          { id: "persona-interesses", label: "Interesses", placeholder: "O que interessa / hiperfoco / preferências?", type: "textarea" },
-          { id: "persona-barreiras", label: "Barreiras", placeholder: "O que dificulta participação/interação/aprendizagem?", type: "textarea" },
-        ]
-      },
-      motivadores: {
-        title: "🔥 Motivadores",
-        description: "O que motiva, acalma, engaja e quais frustrações aparecem no cotidiano.",
-        fields: [
-          { id: "mot-impulsos", label: "O que engaja a criança?", placeholder: "Brincadeiras, temas, rotinas...", type: "textarea" },
-          { id: "mot-frustracoes", label: "O que frustra/desregula?", placeholder: "Ex: ruído, mudanças, espera...", type: "textarea" },
-          { id: "mot-preferencias", label: "Preferências", placeholder: "Ex: atividades sensoriais, visuais...", type: "textarea" },
-          { id: "mot-gatilhos", label: "Gatilhos de participação", placeholder: "O que aumenta chance de interação com pares?", type: "textarea" },
-        ]
-      },
-      problemas: {
-        title: "🚧 Problemas",
-        description: "Defina com precisão o problema/barreira para orientar a solução.",
-        fields: [
-          { id: "prob-principal", label: "Problema Principal", placeholder: "Ex: pouca interação com pares na brincadeira livre", type: "textarea" },
-          { id: "prob-situacoes", label: "Quando acontece?", placeholder: "Em quais momentos (roda, parque, transições)?", type: "textarea" },
-          { id: "prob-impacto", label: "Impacto", placeholder: "Como isso afeta participação/aprendizagem?", type: "textarea" },
-          { id: "prob-ja-tentado", label: "O que já foi tentado?", placeholder: "Estratégias anteriores e resultado", type: "textarea" },
-        ]
-      },
-      desenvolvimento: {
-        title: "💡 Desenvolvimento do Projeto",
-        description: "Brainstorm, protótipo, teste, iteração.",
-        fields: [
-          { id: "dev-ideias", label: "Brainstorm de Ideias", placeholder: "Liste ideias sem filtro...", type: "textarea" },
-          { id: "dev-prototipo", label: "Protótipo (versão simples)", placeholder: "Como testar rápido na escola?", type: "textarea" },
-          { id: "dev-testes", label: "Plano de Teste", placeholder: "Como medir se funcionou? (observação, registro)", type: "textarea" },
-          { id: "dev-ajustes", label: "Ajustes", placeholder: "O que ajustar após feedback?", type: "textarea" },
-        ]
-      },
-      visao: {
-        title: "🔮 Visão",
-        description: "Descreva o cenário ideal após a implementação.",
-        fields: [
-          { id: "vis-cenario", label: "Cenário ideal", placeholder: "Como será quando der certo?", type: "textarea" },
-          { id: "vis-beneficios", label: "Benefícios", placeholder: "O que melhora para criança, turma e professora?", type: "textarea" },
-          { id: "vis-metricas", label: "Métricas de sucesso", placeholder: "Ex: nº de interações, turnos, convites...", type: "textarea" },
-        ]
-      },
-      solucao: {
-        title: "🎯 Solução e Impacto",
-        description: "Defina proposta final e impacto em inclusão/participação/aprendizagem.",
-        fields: [
-          { id: "sol-proposta", label: "Proposta final", placeholder: "Descreva a solução", type: "textarea" },
-          { id: "sol-como-fazer", label: "Como executar (passo a passo)", placeholder: "Ex: materiais, rotina, duração", type: "textarea" },
-          { id: "sol-impacto", label: "Impacto esperado", placeholder: "Ex: mais brincadeiras compartilhadas, autonomia", type: "textarea" },
-        ]
-      }
+      persona: { title: "👤 Criação da Persona", description: "Construa um personagem que representa o usuário-alvo (criança/aluno, professor, família etc.).", fields: [{ id: "persona-nome", label: "Nome da Persona", placeholder: "Ex: Ana" }, { id: "persona-idade", label: "Idade", placeholder: "Ex: 6 anos" }, { id: "persona-contexto", label: "Contexto", placeholder: "Ex: Educação infantil, turma de 20 alunos...", type: "textarea" }, { id: "persona-necessidades", label: "Necessidades", placeholder: "Quais são as principais necessidades?", type: "textarea" }, { id: "persona-interesses", label: "Interesses", placeholder: "O que interessa / hiperfoco / preferências?", type: "textarea" }, { id: "persona-barreiras", label: "Barreiras", placeholder: "O que dificulta participação/interação/aprendizagem?", type: "textarea" }] },
+      motivadores: { title: "🔥 Motivadores", description: "O que motiva, acalma, engaja e quais frustrações aparecem no cotidiano.", fields: [{ id: "mot-impulsos", label: "O que engaja a criança?", placeholder: "Brincadeiras, temas, rotinas...", type: "textarea" }, { id: "mot-frustracoes", label: "O que frustra/desregula?", placeholder: "Ex: ruído, mudanças, espera...", type: "textarea" }, { id: "mot-preferencias", label: "Preferências", placeholder: "Ex: atividades sensoriais, visuais...", type: "textarea" }, { id: "mot-gatilhos", label: "Gatilhos de participação", placeholder: "O que aumenta chance de interação com pares?", type: "textarea" }] },
+      problemas: { title: "🚧 Problemas", description: "Defina com precisão o problema/barreira para orientar a solução.", fields: [{ id: "prob-principal", label: "Problema Principal", placeholder: "Ex: pouca interação com pares na brincadeira livre", type: "textarea" }, { id: "prob-situacoes", label: "Quando acontece?", placeholder: "Em quais momentos (roda, parque, transições)?", type: "textarea" }, { id: "prob-impacto", label: "Impacto", placeholder: "Como isso afeta participação/aprendizagem?", type: "textarea" }, { id: "prob-ja-tentado", label: "O que já foi tentado?", placeholder: "Estratégias anteriores e resultado", type: "textarea" }] },
+      desenvolvimento: { title: "💡 Desenvolvimento do Projeto", description: "Brainstorm, protótipo, teste, iteração.", fields: [{ id: "dev-ideias", label: "Brainstorm de Ideias", placeholder: "Liste ideias sem filtro...", type: "textarea" }, { id: "dev-prototipo", label: "Protótipo (versão simples)", placeholder: "Como testar rápido na escola?", type: "textarea" }, { id: "dev-testes", label: "Plano de Teste", placeholder: "Como medir se funcionou? (observação, registro)", type: "textarea" }, { id: "dev-ajustes", label: "Ajustes", placeholder: "O que ajustar após feedback?", type: "textarea" }] },
+      visao: { title: "🔮 Visão", description: "Descreva o cenário ideal após a implementação.", fields: [{ id: "vis-cenario", label: "Cenário ideal", placeholder: "Como será quando der certo?", type: "textarea" }, { id: "vis-beneficios", label: "Benefícios", placeholder: "O que melhora para criança, turma e professora?", type: "textarea" }, { id: "vis-metricas", label: "Métricas de sucesso", placeholder: "Ex: nº de interações, turnos, convites...", type: "textarea" }] },
+      solucao: { title: "🎯 Solução e Impacto", description: "Defina proposta final e impacto em inclusão/participação/aprendizagem.", fields: [{ id: "sol-proposta", label: "Proposta final", placeholder: "Descreva a solução", type: "textarea" }, { id: "sol-como-fazer", label: "Como executar (passo a passo)", placeholder: "Ex: materiais, rotina, duração", type: "textarea" }, { id: "sol-impacto", label: "Impacto esperado", placeholder: "Ex: mais brincadeiras compartilhadas, autonomia", type: "textarea" }] }
     };
-
-    // ========= STATE =========
-    let currentPhase = "persona";
-    let sessionData = {};
-    let ideasList = [];
-
-    // ========= STORAGE KEYS =========
-    const STORAGE_SESSIONS_KEY = "oficina_sessions_v1";
-    const STORAGE_LAST_SESSION_KEY = "oficina_last_session_v1";
-
-    // ========= UI: toast =========
-    function showToast(message, type = "success") {
-      const container = document.getElementById("toast-container");
-      const toast = document.createElement("div");
-      const colors = { success: "bg-emerald-600", error: "bg-red-600", info: "bg-blue-600" };
-      toast.className = `toast ${colors[type]} text-white px-4 py-3 rounded-lg shadow-lg text-sm font-medium`;
-      toast.textContent = message;
-      container.appendChild(toast);
-      setTimeout(() => toast.remove(), 3000);
-    }
-
-    // ========= Render phase =========
-    function renderPhase(phase) {
-      const data = phasesData[phase];
-      const savedData = sessionData[phase] || {};
-
-      const fieldsHTML = data.fields.map(field => {
-        const value = savedData[field.id] || "";
-        if (field.type === "textarea") {
-          return `
-            <div class="space-y-1">
-              <label class="text-sm font-medium text-gray-700">${field.label}</label>
-              <textarea
-                id="${field.id}"
-                data-phase="${phase}"
-                placeholder="${field.placeholder}"
-                class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 resize-none h-20"
-              >${escapeHtml(value)}</textarea>
-            </div>
-          `;
-        }
-        return `
-          <div class="space-y-1">
-            <label class="text-sm font-medium text-gray-700">${field.label}</label>
-            <input
-              type="text"
-              id="${field.id}"
-              data-phase="${phase}"
-              placeholder="${field.placeholder}"
-              value="${escapeHtml(value)}"
-              class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500"
-            />
-          </div>
-        `;
-      }).join("");
-
-const el = document.getElementById(placeholderId);
-if (el) {
-  el.innerHTML = answer;
-}
-
-// Adicionar refs como mensagem separada
-if (refsHtml) {
-  setTimeout(() => {
-    addChatMessage(refsHtml, false);
-  }, 300);
-}
-        <div class="fade-in">
-          <h2 class="text-xl font-bold mb-2 text-gray-900">${data.title}</h2>
-          <p class="text-gray-600 text-sm mb-4">${data.description}</p>
-          <div class="space-y-4">${fieldsHTML}</div>
-        </div>
-      `;
-
-      document.querySelectorAll(`[data-phase="${phase}"]`).forEach(input => {
-        input.addEventListener("input", (e) => {
-          if (!sessionData[phase]) sessionData[phase] = {};
-          sessionData[phase][e.target.id] = e.target.value;
-          saveLastSessionSnapshot();
-        });
-      });
-    }
-
-    function updatePhaseNavigation(phase) {
-      document.querySelectorAll(".phase-card").forEach(card => {
-        card.classList.toggle("active", card.dataset.phase === phase);
-      });
-    }
-
-    // ========= Ideas =========
-    function renderIdeas() {
-      const container = document.getElementById("ideas-list");
-      if (!ideasList.length) {
-        container.innerHTML = `<p class="text-gray-500 text-sm text-center">Nenhuma ideia registrada ainda.</p>`;
-        return;
-      }
-      container.innerHTML = ideasList.map((idea, index) => `
-        <div class="bg-gray-50 border-2 border-gray-300 rounded-lg p-3 flex justify-between items-start gap-2">
-          <p class="text-sm flex-1 text-gray-800">${escapeHtml(idea)}</p>
-          <button data-idea-index="${index}" class="delete-idea text-gray-400 hover:text-red-500 flex-shrink-0" aria-label="Excluir ideia">
-            ✕
-          </button>
-        </div>
-      `).join("");
-
-      document.querySelectorAll(".delete-idea").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-          const idx = Number(e.currentTarget.dataset.ideaIndex);
-          ideasList.splice(idx, 1);
-          renderIdeas();
-          saveLastSessionSnapshot();
-        });
-      });
-    }
-
-    // ========= Local sessions =========
-    function readSessions() {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_SESSIONS_KEY)) || [];
-      } catch { return []; }
-    }
-
-    function writeSessions(list) {
-      localStorage.setItem(STORAGE_SESSIONS_KEY, JSON.stringify(list));
-    }
-
-    function saveLastSessionSnapshot() {
-      const snapshot = collectSessionData({ includeId: false });
-      localStorage.setItem(STORAGE_LAST_SESSION_KEY, JSON.stringify(snapshot));
-    }
-
-    function restoreLastSessionSnapshot() {
-      try {
-        const s = JSON.parse(localStorage.getItem(STORAGE_LAST_SESSION_KEY));
-        if (!s) return false;
-        loadSessionData(s);
-        return true;
-      } catch { return false; }
-    }
-
-    function collectSessionData({ includeId = true } = {}) {
-      const name = document.getElementById("session-name").value || "Sessão sem nome";
-      return {
-        id: includeId ? String(Date.now()) : undefined,
-        session_name: name,
-        current_phase: currentPhase,
-        sessionData,
-        ideasList,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-    }
-
-    function loadSessionData(session) {
-      document.getElementById("session-name").value = session.session_name || "";
-      sessionData = session.sessionData || {};
-      ideasList = session.ideasList || [];
-      currentPhase = session.current_phase || "persona";
-      updatePhaseNavigation(currentPhase);
-      renderPhase(currentPhase);
-      renderIdeas();
-      saveLastSessionSnapshot();
-    }
-
-    function renderSessionsModal() {
-      const modal = document.getElementById("sessions-modal");
-      const listEl = document.getElementById("sessions-list");
-      const sessions = readSessions();
-
-      if (!sessions.length) {
-        listEl.innerHTML = `<p class="text-gray-500 text-sm text-center py-4">Nenhuma sessão salva ainda.</p>`;
-      } else {
-        listEl.innerHTML = sessions.map(s => `
-          <div class="bg-gray-50 border-2 border-gray-300 rounded-lg p-3 flex justify-between items-center">
-            <div>
-              <p class="font-medium text-gray-900">${escapeHtml(s.session_name || "Sessão")}</p>
-              <p class="text-xs text-gray-600">${new Date(s.created_at || Date.now()).toLocaleDateString("pt-BR")}</p>
-            </div>
-            <div class="flex gap-2">
-              <button data-load="${s.id}" class="load-session bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">Carregar</button>
-              <button data-del="${s.id}" class="delete-session bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">Excluir</button>
-            </div>
-          </div>
-        `).join("");
-
-        listEl.querySelectorAll(".load-session").forEach(btn => {
-          btn.addEventListener("click", () => {
-            const id = btn.dataset.load;
-            const pick = sessions.find(x => x.id === id);
-            if (pick) {
-              loadSessionData(pick);
-              modal.classList.add("hidden");
-              showToast("Sessão carregada!");
-            }
-          });
-        });
-
-        listEl.querySelectorAll(".delete-session").forEach(btn => {
-          btn.addEventListener("click", () => {
-            const id = btn.dataset.del;
-            const next = sessions.filter(x => x.id !== id);
-            writeSessions(next);
-            renderSessionsModal();
-            showToast("Sessão excluída!");
-          });
-        });
-      }
-
-      modal.classList.remove("hidden");
-    }
-
-    // ========= PDF =========
-    function generatePDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-
-      doc.setFontSize(18);
-      doc.text("Oficina de Ideação - Relatório", 14, 18);
-      doc.setFontSize(11);
-      doc.text(`Sessão: ${document.getElementById("session-name").value || "Sem nome"}`, 14, 26);
-      doc.text(`Data: ${new Date().toLocaleDateString("pt-BR")}`, 14, 32);
-
-      let y = 44;
-
-      for (const phaseKey of Object.keys(phasesData)) {
-        const phase = phasesData[phaseKey];
-        const saved = sessionData[phaseKey] || {};
-
-        doc.setFontSize(13);
-        doc.text(phase.title.replace(/[^\w\sÀ-ú-]/g, ""), 14, y);
-        y += 7;
-
-        doc.setFontSize(10);
-        for (const field of phase.fields) {
-          const val = (saved[field.id] || "-").toString();
-          const lines = doc.splitTextToSize(`${field.label}: ${val}`, 180);
-          for (const line of lines) {
-            if (y > 280) { doc.addPage(); y = 18; }
-            doc.text(line, 14, y);
-            y += 5.5;
-          }
-        }
-
-        y += 4;
-        if (y > 280) { doc.addPage(); y = 18; }
-      }
-
-      if (ideasList.length) {
-        if (y > 265) { doc.addPage(); y = 18; }
-        doc.setFontSize(13);
-        doc.text("Ideias e Anotações", 14, y);
-        y += 7;
-
-        doc.setFontSize(10);
-        ideasList.forEach((idea, i) => {
-          const lines = doc.splitTextToSize(`${i + 1}. ${idea}`, 180);
-          for (const line of lines) {
-            if (y > 280) { doc.addPage(); y = 18; }
-            doc.text(line, 14, y);
-            y += 5.5;
-          }
-        });
-      }
-
-      doc.save("oficina-ideacao.pdf");
-      showToast("PDF gerado com sucesso!");
-    }
-
-    // ========= Chat (REAL: Worker) =========
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function addChatMessage(content, isUser = false) {
-      const container = document.getElementById("chat-messages");
-
-      const msg = isUser ? `
-        <div class="flex gap-3 justify-end">
-          <div class="bg-indigo-600 rounded-xl rounded-tr-none p-3 max-w-[85%] shadow-sm">
-            <p class="text-sm text-white">${content}</p>
-          </div>
-          <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
-            <span class="text-sm">👤</span>
-          </div>
-        </div>
-      ` : `
-        <div class="flex gap-3">
-          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-            <span class="text-sm">🤖</span>
-          </div>
-          <div class="bg-white border-2 border-gray-300 rounded-xl rounded-tl-none p-3 max-w-[85%] shadow-sm">
-            <p class="text-sm text-gray-800">${content}</p>
-          </div>
-        </div>
-      `;
-
-      container.insertAdjacentHTML("beforeend", msg);
-      container.scrollTop = container.scrollHeight;
-    }
-
-    function setSending(isSending) {
-      const btn = document.getElementById("btn-send");
-      const icon = document.getElementById("send-icon");
-      btn.disabled = isSending;
-      if (isSending) {
-        icon.innerHTML = `<span class="inline-block spinner">⟳</span>`;
-      } else {
-        icon.textContent = "➤";
-      }
-    }
-
-    async function askWorker(question) {
-      const resp = await fetch(WORKER_CHAT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question })
-      });
-
-      if (!resp.ok) {
-        const txt = await resp.text();
-        throw new Error(`HTTP ${resp.status} - ${txt}`);
-      }
-      return resp.json();
-    }
-
-    function formatRefs(refs) {
-  if (!refs || !Array.isArray(refs) || refs.length === 0) return "";
-  const items = refs.map(r => {
-    const title = escapeHtml(r.title || "Sem título");
-    const year = r.year ? ` • ${escapeHtml(String(r.year))}` : "";
-    const link = r.url ? ` — <a class="text-indigo-600 hover:underline" href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">link</a>` : "";
-    return `<li class="text-xs text-gray-700"><strong>${escapeHtml(r.ref || "REF")}</strong>: ${title}${year}${link}</li>`;
-  }).join("");
-  return `
-    <div class="mt-2 border-t border-gray-200 pt-2">
-      <div class="text-xs font-semibold text-gray-700 mb-1">Referências</div>
-      <ul class="list-disc pl-5 space-y-1">${items}</ul>
-    </div>
-  `;
-}
-
-    async function handleSend() {
-      const input = document.getElementById("chat-input");
-      const raw = input.value.trim();
-      if (!raw) return;
-
-      addChatMessage(escapeHtml(raw), true);
-      input.value = "";
-
-      setSending(true);
-      const placeholderId = "ai-" + Date.now();
-      addChatMessage(`<span id="${placeholderId}">Estou consultando a literatura...</span>`, false);
-
-      try {
-        const data = await askWorker(raw);
-        const answer = escapeHtml(data.answer || "").replace(/\n/g, "<br>");
-        const refsHtml = formatRefs(data.refs);
-
-        const el = document.getElementById(placeholderId);
-        if (el) {
-          el.innerHTML = `${answer}${refsHtml}`;
-        }
-      } catch (e) {
-        const el = document.getElementById(placeholderId);
-        if (el) {
-          el.innerHTML = `Ocorreu um erro ao consultar a IA.<br><small class="text-gray-500">${escapeHtml(String(e.message || e))}</small>`;
-        }
-      } finally {
-        setSending(false);
-      }
-    }
-
-    // ========= INIT =========
-    function init() {
-      // phases nav
-      document.querySelectorAll(".phase-card").forEach(card => {
-        card.addEventListener("click", () => {
-          currentPhase = card.dataset.phase;
-          updatePhaseNavigation(currentPhase);
-          renderPhase(currentPhase);
-          saveLastSessionSnapshot();
-        });
-      });
-
-      // ideas
-      document.getElementById("btn-add-idea").addEventListener("click", () => {
-        const field = document.getElementById("ideas-field");
-        const idea = field.value.trim();
-        if (!idea) return;
-        ideasList.push(idea);
-        field.value = "";
-        renderIdeas();
-        saveLastSessionSnapshot();
-        showToast("Ideia adicionada!");
-      });
-      document.getElementById("btn-clear-ideas").addEventListener("click", () => {
-        document.getElementById("ideas-field").value = "";
-      });
-
-      // sessions save/load
-      document.getElementById("btn-save").addEventListener("click", () => {
-        const all = readSessions();
-        const data = collectSessionData({ includeId: true });
-        all.unshift(data);
-        writeSessions(all.slice(0, 200)); // guarda até 200
-        saveLastSessionSnapshot();
-        showToast("Sessão salva!");
-      });
-
-      document.getElementById("btn-load").addEventListener("click", renderSessionsModal);
-      document.getElementById("btn-close-modal").addEventListener("click", () => {
-        document.getElementById("sessions-modal").classList.add("hidden");
-      });
-      document.getElementById("sessions-modal").addEventListener("click", (e) => {
-        if (e.target.id === "sessions-modal") {
-          document.getElementById("sessions-modal").classList.add("hidden");
-        }
-      });
-
-      // pdf
-      document.getElementById("btn-pdf").addEventListener("click", generatePDF);
-
-      // chat
-      document.getElementById("btn-send").addEventListener("click", handleSend);
-      document.getElementById("chat-input").addEventListener("keydown", (e) => {
-        if (e.key === "Enter") handleSend();
-      });
-
-      // initial render
-      const restored = restoreLastSessionSnapshot();
-      if (!restored) {
-        updatePhaseNavigation(currentPhase);
-        renderPhase(currentPhase);
-        renderIdeas();
-      } else {
-        showToast("Rascunho restaurado", "info");
-      }
-    }
-
+    let currentPhase = "persona", sessionData = {}, ideasList = [];
+    const STORAGE_SESSIONS_KEY = "oficina_sessions_v1", STORAGE_LAST_SESSION_KEY = "oficina_last_session_v1";
+    function showToast(m, t = "success") { const c = document.getElementById("toast-container"), x = document.createElement("div"), r = { success: "bg-emerald-600", error: "bg-red-600", info: "bg-blue-600" }; x.className = `toast ${r[t]} text-white px-4 py-3 rounded-lg shadow-lg text-sm font-medium`; x.textContent = m; c.appendChild(x); setTimeout(() => x.remove(), 3000); }
+    function renderPhase(p) { const d = phasesData[p], s = sessionData[p] || {}; const f = d.fields.map(e => { const v = s[e.id] || ""; return e.type === "textarea" ? `<div class="space-y-1"><label class="text-sm font-medium text-gray-700">${e.label}</label><textarea id="${e.id}" data-phase="${p}" placeholder="${e.placeholder}" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 resize-none h-20">${escapeHtml(v)}</textarea></div>` : `<div class="space-y-1"><label class="text-sm font-medium text-gray-700">${e.label}</label><input type="text" id="${e.id}" data-phase="${p}" placeholder="${e.placeholder}" value="${escapeHtml(v)}" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500" /></div>`; }).join(""); const el = document.getElementById("phase-content"); el.innerHTML = `<div class="fade-in"><h2 class="text-xl font-bold mb-2 text-gray-900">${d.title}</h2><p class="text-gray-600 text-sm mb-4">${d.description}</p><div class="space-y-4">${f}</div></div>`; document.querySelectorAll(`[data-phase="${p}"]`).forEach(i => { i.addEventListener("input", e => { if (!sessionData[p]) sessionData[p] = {}; sessionData[p][e.target.id] = e.target.value; saveLastSessionSnapshot(); }); }); }
+    function updatePhaseNavigation(p) { document.querySelectorAll(".phase-card").forEach(c => { c.classList.toggle("active", c.dataset.phase === p); }); }
+    function renderIdeas() { const c = document.getElementById("ideas-list"); ideasList.length === 0 ? c.innerHTML = `<p class="text-gray-500 text-sm text-center">Nenhuma ideia registrada ainda.</p>` : (c.innerHTML = ideasList.map((i, x) => `<div class="bg-gray-50 border-2 border-gray-300 rounded-lg p-3 flex justify-between items-start gap-2"><p class="text-sm flex-1 text-gray-800">${escapeHtml(i)}</p><button data-idea-index="${x}" class="delete-idea text-gray-400 hover:text-red-500 flex-shrink-0" aria-label="Excluir ideia">✕</button></div>`).join(""), document.querySelectorAll(".delete-idea").forEach(b => { b.addEventListener("click", e => { const x = Number(e.currentTarget.dataset.ideaIndex); ideasList.splice(x, 1); renderIdeas(); saveLastSessionSnapshot(); }); })); }
+    function readSessions() { try { return JSON.parse(localStorage.getItem(STORAGE_SESSIONS_KEY)) || []; } catch { return []; } }
+    function writeSessions(l) { localStorage.setItem(STORAGE_SESSIONS_KEY, JSON.stringify(l)); }
+    function saveLastSessionSnapshot() { const s = collectSessionData({ includeId: !1 }); localStorage.setItem(STORAGE_LAST_SESSION_KEY, JSON.stringify(s)); }
+    function restoreLastSessionSnapshot() { try { const s = JSON.parse(localStorage.getItem(STORAGE_LAST_SESSION_KEY)); return s ? (loadSessionData(s), !0) : !1; } catch { return !1; } }
+    function collectSessionData({ includeId: i = !0 } = {}) { const n = document.getElementById("session-name").value || "Sessão sem nome"; return { id: i ? String(Date.now()) : undefined, session_name: n, current_phase: currentPhase, sessionData, ideasList, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }; }
+    function loadSessionData(s) { document.getElementById("session-name").value = s.session_name || ""; sessionData = s.sessionData || {}; ideasList = s.ideasList || []; currentPhase = s.current_phase || "persona"; updatePhaseNavigation(currentPhase); renderPhase(currentPhase); renderIdeas(); saveLastSessionSnapshot(); }
+    function renderSessionsModal() { const m = document.getElementById("sessions-modal"), l = document.getElementById("sessions-list"), s = readSessions(); s.length === 0 ? l.innerHTML = `<p class="text-gray-500 text-sm text-center py-4">Nenhuma sessão salva ainda.</p>` : (l.innerHTML = s.map(x => `<div class="bg-gray-50 border-2 border-gray-300 rounded-lg p-3 flex justify-between items-center"><div><p class="font-medium text-gray-900">${escapeHtml(x.session_name || "Sessão")}</p><p class="text-xs text-gray-600">${new Date(x.created_at || Date.now()).toLocaleDateString("pt-BR")}</p></div><div class="flex gap-2"><button data-load="${x.id}" class="load-session bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">Carregar</button><button data-del="${x.id}" class="delete-session bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">Excluir</button></div></div>`).join(""), l.querySelectorAll(".load-session").forEach(b => { b.addEventListener("click", () => { const i = b.dataset.load, p = s.find(x => x.id === i); p && (loadSessionData(p), m.classList.add("hidden"), showToast("Sessão carregada!")); }); }), l.querySelectorAll(".delete-session").forEach(b => { b.addEventListener("click", () => { const i = b.dataset.del, n = s.filter(x => x.id !== i); writeSessions(n); renderSessionsModal(); showToast("Sessão excluída!"); }); })); m.classList.remove("hidden"); }
+    function generatePDF() { const { jsPDF: j } = window.jspdf, d = new j(); d.setFontSize(18); d.text("Oficina de Ideação - Relatório", 14, 18); d.setFontSize(11); d.text(`Sessão: ${document.getElementById("session-name").value || "Sem nome"}`, 14, 26); d.text(`Data: ${new Date().toLocaleDateString("pt-BR")}`, 14, 32); let y = 44; Object.keys(phasesData).forEach(pk => { const p = phasesData[pk], s = sessionData[pk] || {}; d.setFontSize(13); d.text(p.title.replace(/[^\w\sÀ-ú-]/g, ""), 14, y); y += 7; d.setFontSize(10); p.fields.forEach(f => { const v = (s[f.id] || "-").toString(), l = d.splitTextToSize(`${f.label}: ${v}`, 180); l.forEach(ln => { y > 280 && (d.addPage(), y = 18); d.text(ln, 14, y); y += 5.5; }); }); y += 4; y > 280 && (d.addPage(), y = 18); }); ideasList.length && (y > 265 && (d.addPage(), y = 18), d.setFontSize(13), d.text("Ideias e Anotações", 14, y), y += 7, d.setFontSize(10), ideasList.forEach((i, x) => { const l = d.splitTextToSize(`${x + 1}. ${i}`, 180); l.forEach(ln => { y > 280 && (d.addPage(), y = 18); d.text(ln, 14, y); y += 5.5; }); })); d.save("oficina-ideacao.pdf"); showToast("PDF gerado com sucesso!"); }
+    function escapeHtml(s) { return String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;"); }
+    function addChatMessage(c, u = !1) { const con = document.getElementById("chat-messages"), m = u ? `<div class="flex gap-3 justify-end"><div class="bg-indigo-600 rounded-xl rounded-tr-none p-3 max-w-[85%] shadow-sm"><p class="text-sm text-white">${c}</p></div><div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0"><span class="text-sm">👤</span></div></div>` : `<div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0"><span class="text-sm">🤖</span></div><div class="bg-white border-2 border-gray-300 rounded-xl rounded-tl-none p-3 max-w-[85%] shadow-sm"><p class="text-sm text-gray-800">${c}</p></div></div>`; con.insertAdjacentHTML("beforeend", m); con.scrollTop = con.scrollHeight; }
+    function setSending(i) { const b = document.getElementById("btn-send"), icon = document.getElementById("send-icon"); b.disabled = i; i ? icon.innerHTML = `<span class="inline-block spinner">⟳</span>` : icon.textContent = "➤"; }
+    async function askWorker(q) { const r = await fetch(WORKER_CHAT_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: q }) }); if (!r.ok) throw new Error(`HTTP ${r.status} - ${await r.text()}`); return r.json(); }
+    function formatRefs(r) { if (!r || !Array.isArray(r) || r.length === 0) return ""; const i = r.map(x => { const t = escapeHtml(x.title || "Sem título"), y = x.year ? ` • ${escapeHtml(String(x.year))}` : "", l = x.url ? ` — <a class="text-indigo-600 hover:underline" href="${escapeHtml(x.url)}" target="_blank" rel="noopener noreferrer">link</a>` : ""; return `<li class="text-xs text-gray-700"><strong>${escapeHtml(x.ref || "REF")}</strong>: ${t}${y}${l}</li>`; }).join(""); return `<div class="mt-2 border-t border-gray-200 pt-2"><div class="text-xs font-semibold text-gray-700 mb-1">Referências</div><ul class="list-disc pl-5 space-y-1">${i}</ul></div>`; }
+    async function handleSend() { const i = document.getElementById("chat-input"), r = i.value.trim(); if (!r) return; addChatMessage(escapeHtml(r), !0); i.value = ""; setSending(!0); const pid = "ai-" + Date.now(); addChatMessage(`<span id="${pid}">Estou consultando a literatura...</span>`, !1); try { const d = await askWorker(r), a = escapeHtml(d.answer || "").replace(/\n/g, "<br>"), refs = formatRefs(d.refs), e = document.getElementById(pid); e && (e.innerHTML = a); refs && setTimeout(() => { addChatMessage(refs, !1); }, 300); } catch (e) { const el = document.getElementById(pid); el && (el.innerHTML = `Ocorreu um erro ao consultar a IA.<br><small class="text-gray-500">${escapeHtml(String(e.message || e))}</small>`); } finally { setSending(!1); } }
+    function init() { document.querySelectorAll(".phase-card").forEach(c => { c.addEventListener("click", () => { currentPhase = c.dataset.phase; updatePhaseNavigation(currentPhase); renderPhase(currentPhase); saveLastSessionSnapshot(); }); }); document.getElementById("btn-add-idea").addEventListener("click", () => { const f = document.getElementById("ideas-field"), i = f.value.trim(); i && (ideasList.push(i), f.value = "", renderIdeas(), saveLastSessionSnapshot(), showToast("Ideia adicionada!")); }); document.getElementById("btn-clear-ideas").addEventListener("click", () => { document.getElementById("ideas-field").value = ""; }); document.getElementById("btn-save").addEventListener("click", () => { const a = readSessions(), d = collectSessionData({ includeId: !0 }); a.unshift(d); writeSessions(a.slice(0, 200)); saveLastSessionSnapshot(); showToast("Sessão salva!"); }); document.getElementById("btn-load").addEventListener("click", renderSessionsModal); document.getElementById("btn-close-modal").addEventListener("click", () => { document.getElementById("sessions-modal").classList.add("hidden"); }); document.getElementById("sessions-modal").addEventListener("click", e => { "sessions-modal" === e.target.id && document.getElementById("sessions-modal").classList.add("hidden"); }); document.getElementById("btn-pdf").addEventListener("click", generatePDF); document.getElementById("btn-send").addEventListener("click", handleSend); document.getElementById("chat-input").addEventListener("keydown", e => { "Enter" === e.key && handleSend(); }); const r = restoreLastSessionSnapshot(); r ? showToast("Rascunho restaurado", "info") : (updatePhaseNavigation(currentPhase), renderPhase(currentPhase), renderIdeas()); }
     init();
   </script>
 </body>
 </html>
-
