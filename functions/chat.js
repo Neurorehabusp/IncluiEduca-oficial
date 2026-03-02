@@ -110,6 +110,7 @@ Resposta concisa:`;
     let answer = String(aiResp.response || "")
       .replace(/\*\*/g, "")
       .replace(/\*/g, "")
+      .replace(/\d+\.\s\*\*/g, (m) => m.replace(/\*\*/g, ""))
       .replace(/#{1,6}\s/g, "")
       .replace(/[_`#~]/g, "")
       .trim();
