@@ -623,12 +623,75 @@ icon.textContent = "➤";
 }
 }
 
+
 async function handleSend() {
-const input = document.getElementById("chat-input");
-const userMessage = input.value.trim();
+  const input = document.getElementById("chat-input");
+  const userMessage = input.value.trim();
 
-if (!userMessage) return;
+  if (!userMessage) return;
 
+  // MONTAR CONTEXTO COM DADOS DAS FASES
+  let contexto = "CONTEXTO DO PROJETO (Canvas de Inovação):\n\n";
+  
+  Object.keys(phasesData).forEach(phase => {
+    if (sessionData[phase]) {
+      contexto += `${phasesData[phase].title}\n`;
+      Object.entries(sessionData[phase]).forEach(([key, value]) => {
+        if (value) {
+          const label = phasesData[phase].fields.find(f => f.id === key)?.label || key;
+          contexto += `- ${label}: ${value}\n`;
+        }
+      });
+      contexto += "\n";
+    }
+  });
+
+  const perguntaCompleta = contexto + `PERGUNTA ESPECÍFICA:\n${userMessage}`;
+
+  addChatMessage(escapeHtml(userMessage), true);
+  input.value = "";
+  setSending(true);
+
+  try {
+    const response = await fetch(WORKER_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        question: perguntaCompleta,
+        phase: currentPhase || null,
+        canvas: sessionData || {}
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro ${response.status}: ${await response.text()}`);
+    }
+
+    const data = await response.json();
+
+    let answer = data.answer || "Não consegui gerar resposta.";
+    const refs = data.refs || [];
+
+    // Adicionar referências formatadas
+    if (refs.length > 0) {
+      answer += "\n\n📚 Referências:\n";
+      refs.forEach(ref => {
+        answer += `\n[${ref.ref}] ${ref.authors} (${ref.year}). ${ref.title}`;
+        if (ref.venue) answer += `\n${ref.venue}`;
+        if (ref.url) answer += `\n${ref.url}`;
+        answer += "\n";
+      });
+    }
+
+    addChatMessage(answer, false);
+  } catch (error) {
+    addChatMessage(`❌ Erro ao consultar a IA:\n${String(error.message || error)}`, false);
+    showToast("Erro ao consultar a IA", "error");
+  } finally {
+    setSending(false);
+  }
+}
+       
 addChatMessage(escapeHtml(userMessage), true);
 input.value = "";
 setSending(true);
