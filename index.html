@@ -394,11 +394,11 @@ const response = await fetch(WORKER_API_URL, {
 method: "POST",
 headers: { "Content-Type": "application/json" },
 body: JSON.stringify({
-question: perguntaCompleta,
-phase: currentPhase || null,
-canvas: sessionData || {}
+  message: userMessage,
+  session_id: (document.getElementById("session-name").value || "default").trim(),
+  phase: currentPhase || null,
+  canvas: sessionData || {}
 })
-});
 
 if (!response.ok) throw new Error(`Erro ${response.status}: ${await response.text()}`);
 
