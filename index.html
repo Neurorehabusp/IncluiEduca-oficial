@@ -109,7 +109,8 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/include-html@1.0.0/include.min.js"></script>
   <script>
-    const WORKER_CHAT_URL = "https://incluicanva.yasminsthtavares.workers.dev/chat";
+      const API_BASE = "https://incluicanvaeincluieduca.neurorehabusprp.workers.dev";
+    const WORKER_CHAT_URL = `${API_BASE}/chat`;
     const phasesData = {
       persona: { title: "👤 Criação da Persona", description: "Construa um personagem que representa o usuário-alvo (criança/aluno, professor, família etc.).", fields: [{ id: "persona-nome", label: "Nome da Persona", placeholder: "Ex: Ana" }, { id: "persona-idade", label: "Idade", placeholder: "Ex: 6 anos" }, { id: "persona-contexto", label: "Contexto", placeholder: "Ex: Educação infantil, turma de 20 alunos...", type: "textarea" }, { id: "persona-necessidades", label: "Necessidades", placeholder: "Quais são as principais necessidades?", type: "textarea" }, { id: "persona-interesses", label: "Interesses", placeholder: "O que interessa / hiperfoco / preferências?", type: "textarea" }, { id: "persona-barreiras", label: "Barreiras", placeholder: "O que dificulta participação/interação/aprendizagem?", type: "textarea" }] },
       motivadores: { title: "🔥 Motivadores", description: "O que motiva, acalma, engaja e quais frustrações aparecem no cotidiano.", fields: [{ id: "mot-impulsos", label: "O que engaja a criança?", placeholder: "Brincadeiras, temas, rotinas...", type: "textarea" }, { id: "mot-frustracoes", label: "O que frustra/desregula?", placeholder: "Ex: ruído, mudanças, espera...", type: "textarea" }, { id: "mot-preferencias", label: "Preferências", placeholder: "Ex: atividades sensoriais, visuais...", type: "textarea" }, { id: "mot-gatilhos", label: "Gatilhos de participação", placeholder: "O que aumenta chance de interação com pares?", type: "textarea" }] },
@@ -143,3 +144,4 @@
   </script>
 </body>
 </html>
+
