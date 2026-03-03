@@ -113,7 +113,7 @@ letter-spacing: 0.05em;
 <div class="text-xs text-gray-500 mt-1">7min</div>
 </button>
 </div>
-<div class="grid lg:grid-cols-2 gap-6">
+<div class="grid lg:grid-cols-1 gap-6">
 <div class="space-y-4">
 <div id="phase-content" class="bg-white rounded-xl p-5 border-2 border-gray-300 shadow-md fade-in"></div>
 <div class="bg-white rounded-xl p-5 border-2 border-gray-300 shadow-md">
@@ -126,34 +126,28 @@ letter-spacing: 0.05em;
 <div id="ideas-list" class="mt-4 space-y-2 max-h-48 overflow-y-auto"></div>
 </div>
 </div>
-<div class="bg-white rounded-xl border-2 border-gray-300 shadow-md flex flex-col h-[500px]">
-<div class="p-4 border-b-2 border-gray-300 flex items-center gap-3">
-<div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center"><span class="text-xl">🤖</span></div>
-<div>
-<h3 class="font-semibold text-gray-900">Assistente (Literatura científica)</h3>
-<p class="text-xs text-gray-600">Pergunte e eu respondo com evidências + referências</p>
 </div>
-<div class="ml-auto flex items-center gap-1">
-<span class="w-2 h-2 bg-emerald-400 rounded-full pulse-dot"></span>
-<span class="text-xs text-emerald-600 font-medium">Online</span>
+<div id="chat-widget" class="fixed bottom-4 right-4 w-96 h-96 bg-white rounded-2xl border-2 border-gray-300 shadow-2xl flex flex-col z-40 hidden">
+<div class="p-4 border-b-2 border-gray-300 flex items-center gap-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-t-xl">
+<div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"><span class="text-lg">🤖</span></div>
+<div class="flex-1">
+<h3 class="font-semibold text-sm">Assistente IA</h3>
+<p class="text-xs opacity-90">Literatura científica</p>
 </div>
+<button id="btn-close-chat" class="text-white hover:bg-white/20 rounded p-1 transition">✕</button>
 </div>
-<div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-<div class="flex gap-3">
-<div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0"><span class="text-sm">🤖</span></div>
-<div class="bg-white border-2 border-gray-300 rounded-xl rounded-tl-none p-3 max-w-[85%] shadow-sm">
-<p class="text-sm text-gray-800">Olá! Descreva seu caso (idade, contexto, objetivo e dificuldade) e vou sugerir estratégias baseadas em estudos científicos — com referências no final.</p>
+<div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 text-sm">
 </div>
-</div>
-</div>
-<div class="p-4 border-t-2 border-gray-300">
+<div class="p-4 border-t-2 border-gray-300 bg-white rounded-b-xl">
 <div class="flex gap-2">
-<input type="text" id="chat-input" placeholder="Descreva seu caso ou faça uma pergunta..." class="flex-1 bg-gray-50 border-2 border-gray-300 rounded-lg px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500" />
-<button id="btn-send" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center justify-center"><span id="send-icon">➤</span></button>
+<input type="text" id="chat-input" placeholder="Faça uma pergunta..." class="flex-1 bg-gray-50 border-2 border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500" />
+<button id="btn-send" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-center"><span id="send-icon">➤</span></button>
 </div>
 </div>
 </div>
-</div>
+
+<button id="btn-open-chat" class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg flex items-center justify-center text-2xl transition transform hover:scale-110">🤖</button>
+
 <div id="sessions-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
 <div class="bg-white rounded-xl p-6 max-w-lg w-full mx-4 max-h-[80%] overflow-auto shadow-2xl border-2 border-gray-300">
 <div class="flex justify-between items-center mb-4">
@@ -361,8 +355,8 @@ const content = document.getElementById("phase-content");
 const formHtml = phase.fields.map(f => {
 const value = sessionData[p]?.[f.id] || "";
 const input = f.type === "textarea"
-? `<textarea id="${f.id}" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 resize-none" rows="4" placeholder="${f.placeholder}">${value}</textarea>`
-: `<input type="text" id="${f.id}" value="${value}" placeholder="${f.placeholder}" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500" />`;
+? `<textarea id="${f.id}" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 resize-none" rows="4" placeholder="${escapeHtml(f.placeholder)}">${escapeHtml(value)}</textarea>`
+: `<input type="text" id="${f.id}" value="${escapeHtml(value)}" placeholder="${escapeHtml(f.placeholder)}" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500" />`;
 return `<div class="mb-4"><label for="${f.id}" class="block text-sm font-medium text-gray-700 mb-2">${f.label}</label>${input}</div>`;
 }).join("");
 
@@ -631,11 +625,11 @@ icon.textContent = "➤";
 
 async function handleSend() {
 const input = document.getElementById("chat-input");
-const question = input.value.trim();
+const userMessage = input.value.trim();
 
-if (!question) return;
+if (!userMessage) return;
 
-addChatMessage(escapeHtml(question), true);
+addChatMessage(escapeHtml(userMessage), true);
 input.value = "";
 setSending(true);
 
@@ -644,9 +638,10 @@ const response = await fetch(WORKER_API_URL, {
 method: "POST",
 headers: { "Content-Type": "application/json" },
 body: JSON.stringify({
-  question: userMessage,
-  phase: currentPhase || null,
-  canvas: sessionData || {}
+question: userMessage,
+phase: currentPhase || null,
+canvas: sessionData || {}
+})
 });
 
 if (!response.ok) {
@@ -662,15 +657,16 @@ const refs = data.refs || [];
 if (refs.length > 0) {
 answer += "\n\n📚 Referências:\n";
 refs.forEach(ref => {
-answer += `\n${ref.ref} ${ref.authors} (${ref.year}). ${ref.title}\n`;
-if (ref.venue) answer += `   ${ref.venue}\n`;
-if (ref.url) answer += `   ${ref.url}\n`;
+answer += `\n[${ref.ref}] ${ref.authors} (${ref.year}). ${ref.title}`;
+if (ref.venue) answer += `\n${ref.venue}`;
+if (ref.url) answer += `\n${ref.url}`;
+answer += "\n";
 });
 }
 
-addChatMessage(escapeHtml(answer), false);
+addChatMessage(answer, false);
 } catch (error) {
-addChatMessage(`❌ Erro ao consultar a IA:\n${escapeHtml(String(error.message || error))}`, false);
+addChatMessage(`❌ Erro ao consultar a IA:\n${String(error.message || error)}`, false);
 showToast("Erro ao consultar a IA", "error");
 } finally {
 setSending(false);
@@ -736,6 +732,18 @@ document.getElementById("sessions-modal").classList.add("hidden");
 
 // PDF
 document.getElementById("btn-pdf").addEventListener("click", generatePDF);
+
+// Chat Widget
+document.getElementById("btn-open-chat").addEventListener("click", () => {
+document.getElementById("chat-widget").classList.remove("hidden");
+document.getElementById("btn-open-chat").classList.add("hidden");
+document.getElementById("chat-input").focus();
+});
+
+document.getElementById("btn-close-chat").addEventListener("click", () => {
+document.getElementById("chat-widget").classList.add("hidden");
+document.getElementById("btn-open-chat").classList.remove("hidden");
+});
 
 // Chat
 document.getElementById("btn-send").addEventListener("click", handleSend);
