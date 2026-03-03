@@ -643,7 +643,10 @@ try {
 const response = await fetch(WORKER_API_URL, {
 method: "POST",
 headers: { "Content-Type": "application/json" },
-body: JSON.stringify({ question })
+body: JSON.stringify({
+  question: userMessage,
+  phase: currentPhase || null,
+  canvas: sessionData || {}
 });
 
 if (!response.ok) {
