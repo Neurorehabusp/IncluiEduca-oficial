@@ -124,7 +124,8 @@ letter-spacing: 0.05em;
 </div>
 </div>
 
-<div id="chat-widget" class="fixed bottom-4 right-4 w-500 h-600 bg-white rounded-2xl border-2 border-gray-300 shadow-2xl flex flex-col z-40 hidden transition-all duration-300" data-expanded="false">
+<!-- CHAT WIDGET - aumentado de w-96 h-96 para w-[500px] h-[600px] -->
+<div id="chat-widget" class="fixed bottom-4 right-4 w-[500px] h-[600px] bg-white rounded-2xl border-2 border-gray-300 shadow-2xl flex flex-col z-40 hidden transition-all duration-300" data-expanded="false">
 <div class="p-4 border-b-2 border-gray-300 flex items-center gap-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-t-xl justify-between">
 <div class="flex items-center gap-3 flex-1">
 <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"><span class="text-lg">🤖</span></div>
@@ -430,11 +431,11 @@ const widget = document.getElementById("chat-widget");
 const isExpanded = widget.dataset.expanded === "true";
 if (isExpanded) {
 widget.classList.remove("inset-0", "rounded-none", "w-full", "h-full");
-widget.classList.add("bottom-4", "right-4", "w-500", "h-600", "rounded-2xl");
+widget.classList.add("bottom-4", "right-4", "w-[500px]", "h-[600px]", "rounded-2xl");
 widget.dataset.expanded = "false";
 document.getElementById("btn-expand-chat").textContent = "⛶";
 } else {
-widget.classList.remove("bottom-4", "right-4", "w-500", "h-600", "rounded-2xl");
+widget.classList.remove("bottom-4", "right-4", "w-[500px]", "h-[600px]", "rounded-2xl");
 widget.classList.add("inset-0", "rounded-none", "w-full", "h-full");
 widget.dataset.expanded = "true";
 document.getElementById("btn-expand-chat").textContent = "⊟";
