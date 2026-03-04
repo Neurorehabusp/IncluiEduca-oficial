@@ -40,12 +40,12 @@ letter-spacing: 0.05em;
 </head>
 <body class="h-full bg-gray-50 text-gray-900 overflow-auto">
 <div id="app" class="w-full min-h-full flex flex-col">
-<div class="w-full bg-white">
-<img src="https://deinformacao.com.br/wp-content/uploads/2026/03/Design-sem-nome-1.png" alt="IncluiCanva Banner" class="w-full object-cover" style="max-height:220px;object-position:center;" />
+<div class="w-full bg-white flex justify-center py-3">
+<img src="https://deinformacao.com.br/wp-content/uploads/2026/03/Design-sem-nome-1.png" alt="IncluiCanva Banner" class="object-contain" style="max-height:90px;" />
 </div>
 <header class="bg-white border-b-4 border-indigo-500 px-4 py-6 shadow-md">
-<div class="max-w-6xl mx-auto">
-<h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-1">IncluiCanva — Oficina de Ideação</h1>
+<div class="max-w-6xl mx-auto text-center">
+<h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-1">🎨 IncluiCanva — Oficina de Ideação</h1>
 <p class="text-gray-600 text-sm md:text-base">Processo criativo estruturado para desenvolvimento de soluções em educação inclusiva</p>
 </div>
 </header>
@@ -351,13 +351,68 @@ showToast("PDF gerado com sucesso!");
 
 function escapeHtml(s) { return String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;"); }
 
-function addChatMessage(content, isUser = false) {
+function addChatMessage(content, isUser = false, fillData = null) {
 const container = document.getElementById("chat-messages");
-const messageHtml = isUser
-? `<div class="flex gap-3 justify-end"><div class="bg-indigo-600 rounded-xl rounded-tr-none p-3 max-w-[85%] shadow-sm"><p class="text-sm text-white">${content}</p></div><div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0"><span class="text-sm">👤</span></div></div>`
-: `<div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0"><span class="text-sm">🤖</span></div><div class="bg-white border-2 border-gray-300 rounded-xl rounded-tl-none p-3 max-w-[85%] shadow-sm"><p class="text-sm text-gray-800 whitespace-pre-wrap">${content}</p></div></div>`;
+const msgId = "msg-" + Date.now() + Math.random().toString(36).slice(2);
+let messageHtml;
+if (isUser) {
+messageHtml = `<div class="flex gap-3 justify-end"><div class="bg-indigo-600 rounded-xl rounded-tr-none p-3 max-w-[85%] shadow-sm"><p class="text-sm text-white">${content}</p></div><div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0"><span class="text-sm">👤</span></div></div>`;
+} else {
+const hasFill = fillData && Object.keys(fillData).length > 0;
+const fillBtn = hasFill
+? `<button class="btn-fill-fields flex items-center gap-1 text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-700 px-2 py-1 rounded-lg transition font-medium" data-msg-id="${msgId}" title="Preencher campos da fase com esta sugestão">✏️ Preencher campos</button>`
+: "";
+messageHtml = `<div class="flex gap-3" id="${msgId}">
+<div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0"><span class="text-sm">🤖</span></div>
+<div class="bg-white border-2 border-gray-300 rounded-xl rounded-tl-none p-3 max-w-[85%] shadow-sm flex flex-col gap-2">
+<p class="text-sm text-gray-800 whitespace-pre-wrap">${content}</p>
+<div class="flex gap-2 flex-wrap pt-1 border-t border-gray-100">
+<button class="btn-copy-msg flex items-center gap-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded-lg transition font-medium" data-msg-id="${msgId}" title="Copiar resposta">📋 Copiar</button>
+${fillBtn}
+</div>
+</div>
+</div>`;
+}
 container.insertAdjacentHTML("beforeend", messageHtml);
+
+// Attach copy handler
+const copyBtn = container.querySelector(`[data-msg-id="${msgId}"].btn-copy-msg`);
+if (copyBtn) {
+copyBtn.addEventListener("click", () => {
+navigator.clipboard.writeText(content).then(() => {
+copyBtn.textContent = "✅ Copiado!";
+setTimeout(() => { copyBtn.innerHTML = "📋 Copiar"; }, 2000);
+});
+});
+}
+
+// Attach fill handler
+if (fillData) {
+const fillBtn2 = container.querySelector(`[data-msg-id="${msgId}"].btn-fill-fields`);
+if (fillBtn2) {
+fillBtn2.addEventListener("click", () => {
+applyFillData(fillData);
+fillBtn2.textContent = "✅ Preenchido!";
+setTimeout(() => { fillBtn2.innerHTML = "✏️ Preencher campos"; }, 2000);
+});
+}
+}
+
 container.scrollTop = container.scrollHeight;
+}
+
+function applyFillData(fillData) {
+const phase = currentPhase;
+if (!sessionData[phase]) sessionData[phase] = {};
+Object.entries(fillData).forEach(([fieldId, value]) => {
+const el = document.getElementById(fieldId);
+if (el && value) {
+el.value = value;
+sessionData[phase][fieldId] = value;
+}
+});
+saveLastSessionSnapshot();
+showToast("Campos preenchidos com sugestão da IA! ✨", "success");
 }
 
 function setSending(isSending) {
@@ -373,6 +428,10 @@ const input = document.getElementById("chat-input");
 const userMessage = input.value.trim();
 if (!userMessage) return;
 
+// Build phase fields map for current phase
+const phaseFields = phasesData[currentPhase]?.fields || [];
+const fieldsList = phaseFields.map(f => `"${f.id}" (${f.label})`).join(", ");
+
 let contexto = "CONTEXTO DO PROJETO (Canvas de Inovação):\n\n";
 Object.keys(phasesData).forEach(phase => {
 if (sessionData[phase]) {
@@ -387,7 +446,11 @@ contexto += "\n";
 }
 });
 
-const perguntaCompleta = contexto + `PERGUNTA ESPECÍFICA:\n${userMessage}`;
+const instrucaoPreenchimento = phaseFields.length > 0
+? `\n\nALÉM DA SUA RESPOSTA, se a sua resposta contiver sugestões concretas que possam preencher os campos da fase atual (${phasesData[currentPhase]?.title}), inclua ao final um bloco JSON no seguinte formato exato (sem markdown, apenas o bloco entre ---FILL_START--- e ---FILL_END---):\n---FILL_START---\n{"${phaseFields[0].id}": "texto sugerido para este campo", ...}\n---FILL_END---\nOs campos disponíveis são: ${fieldsList}. Só inclua o bloco JSON se tiver sugestões relevantes. Não invente se não tiver contexto suficiente.`
+: "";
+
+const perguntaCompleta = contexto + `PERGUNTA ESPECÍFICA:\n${userMessage}` + instrucaoPreenchimento;
 
 addChatMessage(escapeHtml(userMessage), true);
 input.value = "";
@@ -420,7 +483,17 @@ answer += "\n";
 });
 }
 
-addChatMessage(answer, false);
+// Extract fill data if present
+let fillData = null;
+const fillMatch = answer.match(/---FILL_START---([\s\S]*?)---FILL_END---/);
+if (fillMatch) {
+try {
+fillData = JSON.parse(fillMatch[1].trim());
+answer = answer.replace(/---FILL_START---[\s\S]*?---FILL_END---/, "").trim();
+} catch(e) { fillData = null; }
+}
+
+addChatMessage(answer, false, fillData);
 } catch (error) {
 addChatMessage(`❌ Erro ao consultar a IA:\n${String(error.message || error)}`, false);
 showToast("Erro ao consultar a IA", "error");
