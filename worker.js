@@ -5,7 +5,7 @@ const CORS = {
 };
 
 // ===============================
-// 🎯 MAPEAMENTO EXPANDIDO
+// MAPEAMENTO EXPANDIDO
 // ===============================
 const ACADEMIC_MAPPING = {
   autism: [
@@ -66,7 +66,7 @@ const ACADEMIC_MAPPING = {
 };
 
 // ===============================
-// 🔍 DETECÇÃO MELHORADA
+//  DETECÇÃO MELHORADA
 // ===============================
 function detectTopics(question) {
   const q = question.toLowerCase();
@@ -143,7 +143,7 @@ function detectTopics(question) {
 }
 
 // ===============================
-// 🧠 CONSTRUIR QUERIES MÚLTIPLAS
+//  CONSTRUIR QUERIES MÚLTIPLAS
 // ===============================
 function buildSearchQueries(question) {
   const topics = detectTopics(question);
@@ -179,7 +179,7 @@ function buildSearchQueries(question) {
 }
 
 // ===============================
-// 🆕 BUSCA PUBMED.AI
+// BUSCA PUBMED.AI
 // ===============================
 async function searchPubMedAI(query, limit = 10) {
   if (!query || query.trim().length === 0) return [];
@@ -229,7 +229,7 @@ async function searchPubMedAI(query, limit = 10) {
 }
 
 // ===============================
-// 🔬 BUSCA PUBMED OFICIAL
+// BUSCA PUBMED OFICIAL
 // ===============================
 async function searchPubMed(query, limit = 10) {
   if (!query || query.trim().length === 0) return [];
@@ -408,7 +408,7 @@ async function searchCore(query, apiKey, limit = 10) {
 }
 
 // ===============================
-// 📚 BUSCA DOAJ
+// BUSCA DOAJ
 // ===============================
 async function searchDOAJ(query, limit = 10) {
   if (!query) return [];
@@ -452,7 +452,7 @@ async function searchDOAJ(query, limit = 10) {
 }
 
 // ===============================
-// 👩‍🔬 FORMATAÇÃO AUTORES
+// FORMATAÇÃO AUTORES
 // ===============================
 function formatAuthors(authors) {
   const names = (authors || []).map((a) => a?.name).filter(Boolean);
@@ -495,7 +495,7 @@ function processPapers(papers, limit = 4) {
 }
 
 // ===============================
-// 🚀 WORKER PRINCIPAL
+// WORKER PRINCIPAL
 // ===============================
 export default {
   async fetch(req, env) {
@@ -538,7 +538,7 @@ export default {
       console.log("Question:", q);
 
       // ===============================
-      // 🔎 BUSCA COM MÚLTIPLAS FONTES
+      //  BUSCA COM MÚLTIPLAS FONTES
       // ===============================
       const queries = buildSearchQueries(q);
       console.log("Search queries:", queries);
@@ -549,7 +549,7 @@ export default {
       for (const searchQuery of queries) {
         console.log(`Trying query: ${searchQuery}`);
 
-        // 🆕 PRIORIDADE 1: PubMed.ai (mais confiável)
+        //  PRIORIDADE 1: PubMed.ai (mais confiável)
         const pubmedAI = await searchPubMedAI(searchQuery, 8);
         allPapers.push(...pubmedAI);
 
@@ -580,7 +580,7 @@ export default {
       console.log(`Final: ${papers.length} papers`);
 
       // ===============================
-      // ❌ SEM RESULTADOS
+      //  SEM RESULTADOS
       // ===============================
       if (papers.length === 0) {
         const fallback = JSON.stringify({
@@ -599,7 +599,7 @@ export default {
       }
 
       // ===============================
-      // 📖 MONTAR CONTEXTO
+      //  MONTAR CONTEXTO
       // ===============================
       const refs = papers.map((p, i) => ({
         ref: `[${i + 1}]`,
@@ -662,7 +662,7 @@ Responda de forma clara, prática e baseada em evidências científicas.`;
         .trim();
 
       // ===============================
-      // 📚 FORMATAR RESPOSTA COM REFS
+      // FORMATAR RESPOSTA COM REFS
       // ===============================
       const payload = JSON.stringify({
         answer: answer,
