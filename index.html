@@ -3,195 +3,252 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>IncluiCanva - Oficina de Ideação</title>
+<title>IncluIA-Educa - Oficina de Ideação</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-body { box-sizing: border-box; }
+:root {
+  --navy: #1e2a5a;
+  --blue: #3563b4;
+  --pale: #eff4fc;
+  --line: #dce2eb;
+}
+body { box-sizing: border-box; background: #f4f6fa; }
 * { font-family: 'Outfit', sans-serif; }
-.phase-card { transition: all 0.3s ease; }
-.phase-card:hover { transform: translateY(-2px); }
-.phase-card.active { box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35); border-color: rgb(99,102,241) !important; }
-.fade-in { animation: fadeIn 0.35s ease-out; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-.pulse-dot { animation: pulse 2s infinite; }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-.toast { animation: slideIn 0.3s ease-out; }
-@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-.spinner { animation: spin 1s linear infinite; }
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-.timer-box { 
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-border-radius: 12px;
-padding: 16px;
-color: white;
-box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-.timer-display {
-font-size: 2.5rem;
-font-weight: 700;
-font-variant-numeric: tabular-nums;
-letter-spacing: 0.05em;
-}
-.timer-warning { background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); }
-.timer-expired { background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%); }
 
-/* Modal de confirmação */
+.field-input {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #1f2937;
+  font-size: 0.925rem;
+  transition: border-color .15s, box-shadow .15s;
+}
+.field-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(53,99,180,.15); }
+.field-input::placeholder { color: #9ca3af; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 500; transition: background .15s, border-color .15s; cursor: pointer; border: 1px solid transparent; }
+.btn-primary { background: var(--navy); color: #fff; }
+.btn-primary:hover { background: #2a3a78; }
+.btn-secondary { background: #fff; color: var(--navy); border-color: #cbd5e1; }
+.btn-secondary:hover { background: var(--pale); border-color: var(--blue); }
+.btn-danger-soft { background: #fff; color: #9a3412; border-color: #fdba74; }
+.btn-danger-soft:hover { background: #fff7ed; }
+
+.phase-card { transition: all .2s ease; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px 8px; text-align: center; cursor: pointer; }
+.phase-card:hover { border-color: var(--blue); }
+.phase-card .num { width: 26px; height: 26px; border-radius: 999px; background: #e8edf6; color: var(--navy); font-weight: 600; font-size: .8rem; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 4px; }
+.phase-card.active { border-color: var(--navy); background: var(--navy); }
+.phase-card.active .num { background: #fff; color: var(--navy); }
+.phase-card.active .pname { color: #fff; }
+.phase-card.active .pmin { color: #c7d2ee; }
+.pname { font-size: .78rem; font-weight: 600; color: #1f2937; }
+.pmin { font-size: .7rem; color: #6b7280; margin-top: 2px; }
+
+.fade-in { animation: fadeIn .3s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.toast { animation: slideIn .25s ease-out; }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.spinner { animation: spin 1s linear infinite; display: inline-block; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* Cronômetro vertical */
+.timer-wrap { position: sticky; top: 16px; }
+.timer-card { display: flex; flex-direction: column; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--line); border-top: 4px solid var(--blue); border-radius: 14px; padding: 18px 14px; min-height: 440px; text-align: center; box-shadow: 0 1px 2px rgba(15,23,42,.05); transition: border-color .2s, background .2s; }
+.timer-card .t-label { font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #6b7280; }
+.timer-card .t-display { font-size: 2.6rem; font-weight: 600; color: var(--navy); font-variant-numeric: tabular-nums; line-height: 1; }
+.timer-card .t-limit { font-size: .8rem; color: #9ca3af; min-height: 1em; }
+.timer-track { flex: 1; min-height: 120px; width: 12px; background: #e5e7eb; border-radius: 999px; position: relative; overflow: hidden; }
+.timer-fill { position: absolute; left: 0; right: 0; bottom: 0; height: 0%; background: var(--blue); border-radius: 999px; transition: height .6s linear, background .3s; }
+.t-actions { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+.t-btn { width: 100%; min-height: 48px; font-size: .95rem; font-weight: 600; border-radius: 10px; border: 1px solid #cbd5e1; background: #fff; color: #374151; cursor: pointer; transition: background .15s; }
+.t-btn:hover, .t-btn:active { background: var(--pale); }
+.t-btn.primary { background: var(--navy); color: #fff; border-color: var(--navy); }
+.t-btn.primary:hover, .t-btn.primary:active { background: #2a3a78; }
+.timer-card.timer-warning { border-top-color: #f59e0b; background: #fffbeb; }
+.timer-card.timer-warning .t-display { color: #b45309; }
+.timer-card.timer-warning .timer-fill { background: #f59e0b; }
+.timer-card.timer-expired { border-top-color: #dc2626; background: #fef2f2; }
+.timer-card.timer-expired .t-display { color: #b91c1c; }
+.timer-card.timer-expired .timer-fill { background: #dc2626; }
+@media (max-width: 767px) {
+  .timer-wrap { position: static; }
+  .timer-card { flex-direction: row; flex-wrap: wrap; justify-content: space-between; min-height: 0; padding: 12px 14px; border-top-width: 1px; border-left: 4px solid var(--blue); }
+  .timer-track { display: none; }
+  .t-actions { width: auto; flex-direction: row; }
+  .t-btn { width: auto; padding: 0 16px; }
+}
+
+/* Caixa de destaque do grupo */
+.group-box { background: linear-gradient(135deg, #1e2a5a 0%, #2d4392 100%); border-radius: 14px; border-left: 6px solid #7ea3e6; padding: 18px 24px 14px; box-shadow: 0 4px 14px rgba(30,42,90,.25); }
+.group-label { display: block; font-size: .75rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: #a9c0ee; margin-bottom: 4px; }
+.group-input { width: 100%; background: transparent; border: 0; border-bottom: 2px solid rgba(255,255,255,.3); color: #fff; font-size: 1.9rem; font-weight: 600; padding: 6px 0; transition: border-color .15s; }
+.group-input::placeholder { color: rgba(255,255,255,.45); font-weight: 400; }
+.group-input:focus { outline: none; border-bottom-color: #fff; }
+
+/* Ajustes para toque (tablet) */
+.phase-card { padding: 14px 10px; }
+.phase-card .num { width: 34px; height: 34px; font-size: .95rem; }
+.pname { font-size: .92rem; }
+.pmin { font-size: .78rem; }
+.btn { min-height: 44px; padding: 11px 20px; font-size: .9rem; }
+.field-input { font-size: 1rem; }
+
 #confirm-modal { backdrop-filter: blur(2px); }
+.logo-slot { height: 64px; max-width: 220px; object-fit: contain; }
 </style>
 </head>
-<body class="h-full bg-gray-50 text-gray-900 overflow-auto">
+<body class="h-full text-gray-900 overflow-auto">
 <div id="app" class="w-full min-h-full flex flex-col">
-<div class="w-full bg-white flex justify-center py-3">
-<img src="https://deinformacao.com.br/wp-content/uploads/2026/03/Design-sem-nome-1.png" alt="IncluiCanva Banner" class="object-contain" style="max-height:90px;" />
+
+<!-- LOGOS -->
+<div class="w-full bg-white flex justify-center items-center gap-8 py-3 border-b border-gray-100">
+<img src="https://deinformacao.com.br/wp-content/uploads/2026/03/Design-sem-nome-1.png" alt="Logos" class="object-contain" style="max-height:90px;" />
+<!-- Logo IncluIA: salve como logo-incluia.png na mesma pasta deste arquivo; fica oculta enquanto o arquivo não existir -->
+<img id="logo-incluia" src="logo-incluia.png" alt="IncluIA" class="object-contain" style="max-height:90px; display:none;" onload="this.style.display='block'" onerror="this.style.display='none'" />
 </div>
-<header class="bg-white border-b-4 border-indigo-500 px-4 py-6 shadow-md">
-<div class="max-w-6xl mx-auto text-center">
-<h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-1">IncluiCanva — Oficina de Ideação</h1>
-<p class="text-gray-600 text-sm md:text-base">Processo criativo estruturado para desenvolvimento de soluções em educação inclusiva</p>
+
+<!-- TÍTULO -->
+<header class="text-white" style="background: linear-gradient(135deg, #1e2a5a 0%, #2d4392 100%);">
+<div class="max-w-6xl mx-auto px-4 md:px-6 py-6 text-center">
+<h1 class="text-2xl md:text-3xl font-semibold tracking-tight">IncluIA-Educa &mdash; Oficina de Ideação</h1>
+<p class="text-sm md:text-base mt-1" style="color:#c7d4f2;">Processo criativo estruturado para o desenvolvimento de soluções em educação inclusiva</p>
 </div>
 </header>
+
 <main class="flex-1 p-4 md:p-6">
 <div class="max-w-6xl mx-auto">
-<div class="bg-white rounded-xl p-4 mb-6 flex flex-wrap gap-3 items-center shadow-md border border-gray-200">
-<input type="text" id="session-name" placeholder="Nome da sessão..." class="flex-1 min-w-48 bg-gray-50 border-2 border-gray-300 rounded-lg px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500" />
-<button id="btn-save" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"><span>💾</span> Salvar Sessão</button>
-<button id="btn-load" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"><span>📂</span> Carregar Sessão</button>
-<button id="btn-new-session" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"><span>🆕</span> Nova Sessão</button>
-<button id="btn-pdf" class="bg-fuchsia-600 hover:bg-fuchsia-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"><span>📄</span> Gerar PDF</button>
-</div>
 
-<div id="phase-timer" class="timer-box mb-6 text-center">
-<div class="text-sm font-medium mb-2 opacity-90">⏱️ Tempo da Fase Atual</div>
-<div class="timer-display" id="timer-display">00:00</div>
-<div class="mt-3 flex gap-2 justify-center">
-<button id="btn-timer-start" class="bg-white/20 hover:bg-white/30 backdrop-blur px-4 py-2 rounded-lg font-medium transition">▶️ Iniciar</button>
-<button id="btn-timer-pause" class="bg-white/20 hover:bg-white/30 backdrop-blur px-4 py-2 rounded-lg font-medium transition hidden">⏸️ Pausar</button>
-<button id="btn-timer-reset" class="bg-white/20 hover:bg-white/30 backdrop-blur px-4 py-2 rounded-lg font-medium transition">🔄 Reiniciar</button>
-</div>
-</div>
+  <!-- GRUPO EM DESTAQUE + SESSÃO -->
+  <section class="mb-5 grid md:grid-cols-[1.5fr_1fr] gap-4">
+    <div class="group-box">
+      <label for="group-name" class="group-label">Grupo</label>
+      <input type="text" id="group-name" placeholder="Digite o nome do grupo" class="group-input" autocomplete="off" />
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5 flex flex-col justify-center">
+      <label for="session-name" class="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1.5">Nome da sessão</label>
+      <input type="text" id="session-name" placeholder="Ex.: Oficina de Ideação - Turma A" class="field-input" />
+    </div>
+  </section>
 
-<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3 mb-6">
-<button data-phase="revisao" class="phase-card active bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm">
-<div class="text-2xl mb-1">👥</div>
-<div class="text-xs font-medium text-indigo-600">0. Revisão</div>
-<div class="text-xs text-gray-500 mt-1">2min</div>
-</button>
-<button data-phase="persona" class="phase-card bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm">
-<div class="text-2xl mb-1">👤</div>
-<div class="text-xs font-medium text-indigo-600">1. Persona</div>
-<div class="text-xs text-gray-500 mt-1">7min</div>
-</button>
-<button data-phase="desafios" class="phase-card bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm">
-<div class="text-2xl mb-1">⚡</div>
-<div class="text-xs font-medium text-indigo-600">2. Desafios</div>
-<div class="text-xs text-gray-500 mt-1">7min</div>
-</button>
-<button data-phase="problemas" class="phase-card bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm">
-<div class="text-2xl mb-1">🚧</div>
-<div class="text-xs font-medium text-indigo-600">3. Problemas</div>
-<div class="text-xs text-gray-500 mt-1">5min</div>
-</button>
-<button data-phase="solucao" class="phase-card bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm">
-<div class="text-2xl mb-1">💡</div>
-<div class="text-xs font-medium text-indigo-600">4. Solução</div>
-<div class="text-xs text-gray-500 mt-1">7min</div>
-</button>
-<button data-phase="desenvolvimento" class="phase-card bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm">
-<div class="text-2xl mb-1">🛠️</div>
-<div class="text-xs font-medium text-indigo-600">5. Desenvolvimento</div>
-<div class="text-xs text-gray-500 mt-1">8min</div>
-</button>
-<button data-phase="impacto" class="phase-card bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm">
-<div class="text-2xl mb-1">🎯</div>
-<div class="text-xs font-medium text-indigo-600">6. Impacto</div>
-<div class="text-xs text-gray-500 mt-1">4min</div>
-</button>
-<button data-phase="apresentacao" class="phase-card bg-white hover:bg-gray-50 p-3 rounded-xl text-center transition border-2 border-gray-300 shadow-sm">
-<div class="text-2xl mb-1">🎤</div>
-<div class="text-xs font-medium text-indigo-600">7. Apresentação</div>
-<div class="text-xs text-gray-500 mt-1">7min</div>
-</button>
-</div>
+  <!-- AÇÕES -->
+  <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-3 mb-5 flex flex-wrap gap-2">
+    <button id="btn-save" class="btn btn-primary">Salvar sessão</button>
+    <button id="btn-load" class="btn btn-secondary">Carregar sessão</button>
+    <button id="btn-pdf" class="btn btn-secondary">Gerar PDF</button>
+    <button id="btn-new-session" class="btn btn-danger-soft ml-auto">Nova sessão</button>
+  </div>
 
-<div class="grid lg:grid-cols-1 gap-6">
-<div class="space-y-4">
-<div id="phase-content" class="bg-white rounded-xl p-5 border-2 border-gray-300 shadow-md fade-in"></div>
-<div class="bg-white rounded-xl p-5 border-2 border-gray-300 shadow-md">
-<h3 class="font-semibold text-lg mb-3 flex items-center gap-2 text-gray-900"><span class="text-xl">📝</span> Minhas Ideias e Anotações</h3>
-<textarea id="ideas-field" placeholder="Registre suas ideias, insights e anotações aqui..." class="w-full h-32 bg-gray-50 border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 resize-none"></textarea>
-<div class="flex gap-2 mt-3">
-<button id="btn-add-idea" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">+ Adicionar Ideia</button>
-<button id="btn-clear-ideas" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium transition">Limpar</button>
-</div>
-<div id="ideas-list" class="mt-4 space-y-2 max-h-48 overflow-y-auto"></div>
-</div>
-</div>
-</div>
+  <!-- FASES: 4 POR LINHA -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+    <button data-phase="revisao" class="phase-card active"><div class="num">0</div><div class="pname">Revisão</div><div class="pmin">2 min</div></button>
+    <button data-phase="persona" class="phase-card"><div class="num">1</div><div class="pname">Persona</div><div class="pmin">7 min</div></button>
+    <button data-phase="desafios" class="phase-card"><div class="num">2</div><div class="pname">Desafios</div><div class="pmin">7 min</div></button>
+    <button data-phase="problemas" class="phase-card"><div class="num">3</div><div class="pname">Problemas</div><div class="pmin">5 min</div></button>
+    <button data-phase="solucao" class="phase-card"><div class="num">4</div><div class="pname">Solução</div><div class="pmin">7 min</div></button>
+    <button data-phase="desenvolvimento" class="phase-card"><div class="num">5</div><div class="pname">Desenvolvimento</div><div class="pmin">8 min</div></button>
+    <button data-phase="impacto" class="phase-card"><div class="num">6</div><div class="pname">Impacto</div><div class="pmin">4 min</div></button>
+    <button data-phase="apresentacao" class="phase-card"><div class="num">7</div><div class="pname">Apresentação</div><div class="pmin">7 min</div></button>
+  </div>
+
+  <!-- CONTEÚDO + RELÓGIO VERTICAL -->
+  <div class="grid md:grid-cols-[minmax(0,1fr)_190px] gap-5 items-start">
+    <div class="space-y-5 order-2 md:order-1">
+      <div id="phase-content" class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm fade-in"></div>
+
+      <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+        <h3 class="font-semibold text-base mb-3" style="color: var(--navy);">Ideias e anotações</h3>
+        <textarea id="ideas-field" placeholder="Registre ideias, insights e anotações aqui..." class="field-input resize-none" style="height:112px;"></textarea>
+        <div class="flex gap-2 mt-3">
+          <button id="btn-add-idea" class="btn btn-primary">Adicionar ideia</button>
+          <button id="btn-clear-ideas" class="btn btn-secondary">Limpar</button>
+        </div>
+        <div id="ideas-list" class="mt-4 space-y-2 max-h-48 overflow-y-auto"></div>
+      </div>
+    </div>
+
+    <aside class="order-1 md:order-2 timer-wrap">
+      <div id="phase-timer" class="timer-card">
+        <span class="t-label">Tempo da fase</span>
+        <span class="t-display" id="timer-display">00:00</span>
+        <span class="t-limit" id="timer-limit"></span>
+        <div class="timer-track"><div class="timer-fill" id="timer-fill"></div></div>
+        <div class="t-actions">
+          <button id="btn-timer-start" class="t-btn primary">Iniciar</button>
+          <button id="btn-timer-pause" class="t-btn primary hidden">Pausar</button>
+          <button id="btn-timer-reset" class="t-btn">Reiniciar</button>
+        </div>
+      </div>
+    </aside>
+  </div>
 
 <!-- CHAT WIDGET -->
-<div id="chat-widget" class="fixed bottom-4 right-4 w-[500px] h-[600px] bg-white rounded-2xl border-2 border-gray-300 shadow-2xl flex flex-col z-40 hidden transition-all duration-300" data-expanded="false">
-<div class="p-4 border-b-2 border-gray-300 flex items-center gap-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-t-xl justify-between">
-<div class="flex items-center gap-3 flex-1">
-<div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center"><span class="text-lg">🤖</span></div>
-<div>
-<h3 class="font-semibold text-sm">Assistente IA</h3>
-<p class="text-xs opacity-90">Literatura científica</p>
-</div>
-</div>
-<div class="flex gap-2 items-center">
-<button id="btn-clear-chat" class="text-white hover:bg-white/20 rounded p-1 transition text-xs px-2" title="Limpar conversa">🗑️ Limpar chat</button>
-<button id="btn-expand-chat" class="text-white hover:bg-white/20 rounded p-1 transition" title="Expandir">⛶</button>
-<button id="btn-close-chat" class="text-white hover:bg-white/20 rounded p-1 transition">✕</button>
-</div>
-</div>
-<div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 text-sm"></div>
-<div class="p-4 border-t-2 border-gray-300 bg-white rounded-b-xl">
-<div class="flex gap-2">
-<input type="text" id="chat-input" placeholder="Faça uma pergunta..." class="flex-1 bg-gray-50 border-2 border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500" />
-<button id="btn-send" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-center"><span id="send-icon">➤</span></button>
-</div>
-</div>
-</div>
+  <div id="chat-widget" class="fixed bottom-4 right-4 w-[500px] h-[600px] bg-white rounded-xl border border-gray-300 shadow-2xl flex flex-col z-40 hidden transition-all duration-300" data-expanded="false">
+    <div class="px-4 py-3 flex items-center gap-3 text-white rounded-t-xl justify-between" style="background: var(--navy);">
+      <div class="flex items-center gap-3 flex-1">
+        <div class="w-8 h-8 rounded-md bg-white/15 flex items-center justify-center text-xs font-bold tracking-wide">IA</div>
+        <div>
+          <h3 class="font-semibold text-sm leading-tight">Assistente IA</h3>
+          <p class="text-xs opacity-80">Baseado em literatura científica</p>
+        </div>
+      </div>
+      <div class="flex gap-1 items-center">
+        <button id="btn-clear-chat" class="text-white/90 hover:bg-white/15 rounded px-2 py-1 transition text-xs" title="Limpar conversa">Limpar</button>
+        <button id="btn-expand-chat" class="text-white/90 hover:bg-white/15 rounded px-2 py-1 transition text-xs" title="Expandir">Expandir</button>
+        <button id="btn-close-chat" class="text-white/90 hover:bg-white/15 rounded px-2 py-1 transition text-lg leading-none" aria-label="Fechar">&times;</button>
+      </div>
+    </div>
+    <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 text-sm"></div>
+    <div class="p-3 border-t border-gray-200 bg-white rounded-b-xl">
+      <div class="flex gap-2">
+        <input type="text" id="chat-input" placeholder="Faça uma pergunta..." class="field-input" />
+        <button id="btn-send" class="btn btn-primary"><span id="send-icon">Enviar</span></button>
+      </div>
+    </div>
+  </div>
 
-<button id="btn-open-chat" class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg flex items-center justify-center text-2xl transition transform hover:scale-110">🤖</button>
+  <button id="btn-open-chat" class="fixed bottom-6 right-6 z-50 h-12 px-5 rounded-full text-white shadow-lg flex items-center gap-2 text-sm font-medium transition hover:opacity-95" style="background: var(--navy);">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Assistente IA
+  </button>
 
-<!-- Modal sessões salvas -->
-<div id="sessions-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
-<div class="bg-white rounded-xl p-6 max-w-lg w-full mx-4 max-h-[80%] overflow-auto shadow-2xl border-2 border-gray-300">
-<div class="flex justify-between items-center mb-4">
-<h3 class="font-semibold text-lg text-gray-900">📂 Sessões Salvas</h3>
-<button id="btn-close-modal" class="text-gray-400 hover:text-gray-900 text-xl" aria-label="Fechar">✕</button>
-</div>
-<div id="sessions-list" class="space-y-2">
-<p class="text-gray-500 text-sm text-center py-4">Nenhuma sessão salva ainda.</p>
-</div>
-</div>
-</div>
+  <!-- Modal sessões salvas -->
+  <div id="sessions-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl p-6 max-w-lg w-full mx-4 max-h-[80%] overflow-auto shadow-2xl border border-gray-200">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-semibold text-lg" style="color: var(--navy);">Sessões salvas</h3>
+        <button id="btn-close-modal" class="text-gray-400 hover:text-gray-900 text-2xl leading-none" aria-label="Fechar">&times;</button>
+      </div>
+      <div id="sessions-list" class="space-y-2">
+        <p class="text-gray-500 text-sm text-center py-4">Nenhuma sessão salva ainda.</p>
+      </div>
+    </div>
+  </div>
 
-<!-- Modal de confirmação Nova Sessão -->
-<div id="confirm-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
-<div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl border-2 border-gray-200">
-<div class="text-center mb-4">
-<div class="text-4xl mb-3">🆕</div>
-<h3 class="font-bold text-lg text-gray-900 mb-2">Iniciar nova sessão?</h3>
-<p class="text-sm text-gray-500">Todos os campos, ideias e o histórico do chat serão apagados. <strong>Esta ação não pode ser desfeita.</strong></p>
-<p class="text-xs text-gray-400 mt-2">Dica: salve a sessão atual antes de continuar.</p>
-</div>
-<div class="flex gap-3 mt-5">
-<button id="btn-confirm-cancel" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl font-medium transition">Cancelar</button>
-<button id="btn-confirm-ok" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl font-medium transition">Sim, limpar tudo</button>
-</div>
-</div>
-</div>
+  <!-- Modal de confirmação Nova Sessão -->
+  <div id="confirm-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl p-6 max-w-sm w-full mx-4 shadow-2xl border border-gray-200">
+      <div class="text-center mb-4">
+        <h3 class="font-semibold text-lg mb-2" style="color: var(--navy);">Iniciar nova sessão?</h3>
+        <p class="text-sm text-gray-600">Todos os campos, ideias e o histórico do chat serão apagados. <strong>Esta ação não pode ser desfeita.</strong></p>
+        <p class="text-xs text-gray-400 mt-2">Dica: salve a sessão atual antes de continuar.</p>
+      </div>
+      <div class="flex gap-3 mt-5">
+        <button id="btn-confirm-cancel" class="btn btn-secondary flex-1">Cancelar</button>
+        <button id="btn-confirm-ok" class="btn btn-primary flex-1">Sim, limpar tudo</button>
+      </div>
+    </div>
+  </div>
 
-<div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+  <div id="toast-container" class="fixed bottom-20 right-4 z-50 space-y-2"></div>
 
-<footer class="mt-8 text-center text-gray-500 text-xs pb-4">
-<p>Este aplicativo está sob licença <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.pt_BR" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline font-medium">CC BY-NC-SA 4.0</a></p>
-<p class="mt-1">Uso livre para fins educacionais e não comerciais</p>
-</footer>
+  <footer class="mt-10 text-center text-gray-500 text-xs pb-4">
+    <p>Este aplicativo está sob licença <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.pt_BR" target="_blank" rel="noopener noreferrer" class="hover:underline font-medium" style="color: var(--blue);">CC BY-NC-SA 4.0</a></p>
+    <p class="mt-1">Uso livre para fins educacionais e não comerciais</p>
+  </footer>
 </div>
 </main>
 </div>
@@ -200,21 +257,20 @@ letter-spacing: 0.05em;
 const WORKER_API_URL = "https://teste-ia.neurorehabusprp.workers.dev/chat";
 
 const phasesData = {
-revisao: { title: "👥 Revisão da Divisão dos Grupos", duration: 2, description: "Revisão rápida da formação dos grupos de trabalho.", fields: [{ id: "rev-grupos", label: "Composição dos grupos", placeholder: "Quem está em cada grupo?", type: "textarea" }] },
-persona: { title: "👤 Criação da Persona", duration: 7, description: "Definição do público-alvo da solução, considerando características da criança, contexto escolar e necessidades principais.", fields: [{ id: "persona-nome", label: "Nome da Persona", placeholder: "Ex: João" }, { id: "persona-idade", label: "Idade", placeholder: "Ex: 7 anos" }, { id: "persona-contexto", label: "Contexto Escolar", placeholder: "Ex: 2º ano, turma de 25 alunos, escola pública...", type: "textarea" }, { id: "persona-caracteristicas", label: "Características da Criança", placeholder: "Diagnóstico, comportamento, comunicação...", type: "textarea" }, { id: "persona-necessidades", label: "Necessidades Principais", placeholder: "O que a criança precisa para participar melhor?", type: "textarea" }] },
-desafios: { title: "⚡ Desafios de Inclusão", duration: 7, description: "Identificação dos desafios atuais de inclusão das crianças com deficiência na escola.", fields: [{ id: "des-principais", label: "Principais Desafios Observados", placeholder: "Descreva os desafios observados (acessibilidade, social, comunicacional, em atividade diária de vida)...", type: "textarea" }] },
-problemas: { title: "🚧 Definição de Problemas", duration: 5, description: "Escolha de um problema central a partir dos desafios identificados, formulado de maneira clara e objetiva.", fields: [{ id: "prob-principal", label: "Problema Central", placeholder: "Qual o problema específico que vamos resolver?", type: "textarea" }, { id: "prob-criterios", label: "Por que escolhemos este problema?", placeholder: "Critérios de escolha: urgência, viabilidade...", type: "textarea" }] },
-solucao: { title: "💡 Proposta de Solução", duration: 7, description: "Definição da ideia principal do projeto e da solução que será desenvolvida pelo grupo.", fields: [{ id: "sol-ideia", label: "Ideia Principal", placeholder: "Qual é a solução proposta? Como funciona? Quais recursos são necessários? O que a torna especial?", type: "textarea" }] },
-desenvolvimento: { title: "🛠️ Desenvolvimento do Projeto", duration: 8, description: "Definição das etapas necessárias para implementação da solução, organização das ações e responsabilidades.", fields: [{ id: "dev-etapas", label: "Etapas de Desenvolvimento", placeholder: "1. Primeira etapa\n2. Segunda etapa...", type: "textarea" }, { id: "dev-recursos", label: "Recursos Necessários", placeholder: "Quais materiais e recursos serão utilizados?", type: "textarea" }, { id: "dev-organizacao", label: "Organização de Recursos", placeholder: "Como conseguir e organizar os materiais?", type: "textarea" }, { id: "dev-cronograma", label: "Cronograma", placeholder: "Quando cada etapa será realizada?", type: "textarea" }, { id: "dev-responsaveis", label: "Responsabilidades", placeholder: "Quem faz o quê?", type: "textarea" }] },
-impacto: { title: "🎯 Impacto Esperado", duration: 4, description: "Identificação das mudanças esperadas após a implementação do projeto e dos possíveis impactos educacionais.", fields: [{ id: "imp-crianca", label: "Impacto na Criança", placeholder: "O que mudará para a criança?", type: "textarea" }, { id: "imp-turma", label: "Impacto na Turma", placeholder: "Como a turma será beneficiada?", type: "textarea" }, { id: "imp-escola", label: "Impacto na Escola", placeholder: "Mudanças mais amplas...", type: "textarea" }, { id: "imp-indicadores", label: "Indicadores de Sucesso (O que se espera)", placeholder: "O que se espera alcançar? Quais resultados indicarão que o projeto funcionou?", type: "textarea" }] },
-apresentacao: { title: "🎤 Construção da Narrativa e Apresentação", duration: 7, description: "Elaboração de uma história que apresente a persona, o problema identificado, a solução proposta e o impacto esperado.", fields: [{ id: "apr-narrativa", label: "Narrativa / História", placeholder: "Conte a história do projeto de forma envolvente...", type: "textarea" }, { id: "apr-slides", label: "Estrutura da Apresentação", placeholder: "Slides/pontos principais que serão apresentados...", type: "textarea" }, { id: "apr-tempo", label: "Divisão do Tempo", placeholder: "Quem fala o quê e quando?", type: "textarea" }] }
+revisao: { title: "Revisão da Divisão dos Grupos", duration: 2, description: "Revisão rápida da formação dos grupos de trabalho.", fields: [{ id: "rev-grupos", label: "Composição dos grupos", placeholder: "Quem está em cada grupo?", type: "textarea" }] },
+persona: { title: "Criação da Persona", duration: 7, description: "Definição do público-alvo da solução, considerando características da criança, contexto escolar e necessidades principais.", fields: [{ id: "persona-nome", label: "Nome da Persona", placeholder: "Ex: João" }, { id: "persona-idade", label: "Idade", placeholder: "Ex: 7 anos" }, { id: "persona-contexto", label: "Contexto Escolar", placeholder: "Ex: 2º ano, turma de 25 alunos, escola pública...", type: "textarea" }, { id: "persona-caracteristicas", label: "Características da Criança", placeholder: "Diagnóstico, comportamento, comunicação...", type: "textarea" }, { id: "persona-necessidades", label: "Necessidades Principais", placeholder: "O que a criança precisa para participar melhor?", type: "textarea" }] },
+desafios: { title: "Desafios de Inclusão", duration: 7, description: "Identificação dos desafios atuais de inclusão das crianças com deficiência na escola.", fields: [{ id: "des-principais", label: "Principais Desafios Observados", placeholder: "Descreva os desafios observados (acessibilidade, social, comunicacional, em atividade diária de vida)...", type: "textarea" }] },
+problemas: { title: "Definição de Problemas", duration: 5, description: "Escolha de um problema central a partir dos desafios identificados, formulado de maneira clara e objetiva.", fields: [{ id: "prob-principal", label: "Problema Central", placeholder: "Qual o problema específico que vamos resolver?", type: "textarea" }, { id: "prob-criterios", label: "Por que escolhemos este problema?", placeholder: "Critérios de escolha: urgência, viabilidade...", type: "textarea" }] },
+solucao: { title: "Proposta de Solução", duration: 7, description: "Definição da ideia principal do projeto e da solução que será desenvolvida pelo grupo.", fields: [{ id: "sol-ideia", label: "Ideia Principal", placeholder: "Qual é a solução proposta? Como funciona? Quais recursos são necessários? O que a torna especial?", type: "textarea" }] },
+desenvolvimento: { title: "Desenvolvimento do Projeto", duration: 8, description: "Definição das etapas necessárias para implementação da solução, organização das ações e responsabilidades.", fields: [{ id: "dev-etapas", label: "Etapas de Desenvolvimento", placeholder: "1. Primeira etapa\n2. Segunda etapa...", type: "textarea" }, { id: "dev-recursos", label: "Recursos Necessários", placeholder: "Quais materiais e recursos serão utilizados?", type: "textarea" }, { id: "dev-organizacao", label: "Organização de Recursos", placeholder: "Como conseguir e organizar os materiais?", type: "textarea" }, { id: "dev-cronograma", label: "Cronograma", placeholder: "Quando cada etapa será realizada?", type: "textarea" }, { id: "dev-responsaveis", label: "Responsabilidades", placeholder: "Quem faz o quê?", type: "textarea" }] },
+impacto: { title: "Impacto Esperado", duration: 4, description: "Identificação das mudanças esperadas após a implementação do projeto e dos possíveis impactos educacionais.", fields: [{ id: "imp-crianca", label: "Impacto na Criança", placeholder: "O que mudará para a criança?", type: "textarea" }, { id: "imp-turma", label: "Impacto na Turma", placeholder: "Como a turma será beneficiada?", type: "textarea" }, { id: "imp-escola", label: "Impacto na Escola", placeholder: "Mudanças mais amplas...", type: "textarea" }, { id: "imp-indicadores", label: "Indicadores de Sucesso (O que se espera)", placeholder: "O que se espera alcançar? Quais resultados indicarão que o projeto funcionou?", type: "textarea" }] },
+apresentacao: { title: "Construção da Narrativa e Apresentação", duration: 7, description: "Elaboração de uma história que apresente a persona, o problema identificado, a solução proposta e o impacto esperado.", fields: [{ id: "apr-narrativa", label: "Narrativa / História", placeholder: "Conte a história do projeto de forma envolvente...", type: "textarea" }, { id: "apr-slides", label: "Estrutura da Apresentação", placeholder: "Slides/pontos principais que serão apresentados...", type: "textarea" }, { id: "apr-tempo", label: "Divisão do Tempo", placeholder: "Quem fala o quê e quando?", type: "textarea" }] }
 };
 
 let timerInterval = null, timerSeconds = 0, timerRunning = false, currentPhaseDuration = 0;
 const STORAGE_SESSIONS_KEY = "incluieduca-sessions", STORAGE_LAST_SESSION_KEY = "incluieduca-last-session";
 let currentPhase = "revisao", sessionData = {}, ideasList = [];
 
-// session_id único por sessão de trabalho (gerado na abertura, renovado no "Nova Sessão")
 let chatSessionId = "session-" + Date.now();
 
 function generateNewSessionId() {
@@ -222,449 +278,633 @@ function generateNewSessionId() {
 }
 
 function updateTimerDisplay() {
-const minutes = Math.floor(timerSeconds / 60), seconds = timerSeconds % 60;
-const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-document.getElementById('timer-display').textContent = display;
-const timerBox = document.getElementById('phase-timer');
-const totalSeconds = currentPhaseDuration * 60;
-if (timerSeconds >= totalSeconds) timerBox.className = 'timer-box timer-expired mb-6 text-center';
-else if (timerSeconds >= totalSeconds * 0.8) timerBox.className = 'timer-box timer-warning mb-6 text-center';
-else timerBox.className = 'timer-box mb-6 text-center';
+  const minutes = Math.floor(timerSeconds / 60), seconds = timerSeconds % 60;
+  document.getElementById('timer-display').textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  document.getElementById('timer-limit').textContent = currentPhaseDuration ? `de ${String(currentPhaseDuration).padStart(2, '0')}:00` : "";
+  const timerBox = document.getElementById('phase-timer');
+  const totalSeconds = currentPhaseDuration * 60;
+  if (totalSeconds && timerSeconds >= totalSeconds) timerBox.className = 'timer-card timer-expired';
+  else if (totalSeconds && timerSeconds >= totalSeconds * 0.8) timerBox.className = 'timer-card timer-warning';
+  else timerBox.className = 'timer-card';
+  const fill = document.getElementById('timer-fill');
+  if (fill) fill.style.height = totalSeconds ? Math.min(100, (timerSeconds / totalSeconds) * 100) + '%' : '0%';
 }
 
 function startTimer() {
-if (timerRunning) return;
-timerRunning = true;
-document.getElementById('btn-timer-start').classList.add('hidden');
-document.getElementById('btn-timer-pause').classList.remove('hidden');
-timerInterval = setInterval(() => { timerSeconds++; updateTimerDisplay(); }, 1000);
+  if (timerRunning) return;
+  timerRunning = true;
+  document.getElementById('btn-timer-start').classList.add('hidden');
+  document.getElementById('btn-timer-pause').classList.remove('hidden');
+  timerInterval = setInterval(() => { timerSeconds++; updateTimerDisplay(); }, 1000);
 }
 
 function pauseTimer() {
-if (!timerRunning) return;
-timerRunning = false;
-document.getElementById('btn-timer-start').classList.remove('hidden');
-document.getElementById('btn-timer-pause').classList.add('hidden');
-clearInterval(timerInterval);
+  if (!timerRunning) return;
+  timerRunning = false;
+  document.getElementById('btn-timer-start').classList.remove('hidden');
+  document.getElementById('btn-timer-pause').classList.add('hidden');
+  clearInterval(timerInterval);
 }
 
 function resetTimer() { pauseTimer(); timerSeconds = 0; updateTimerDisplay(); }
 
 function showToast(m, t = "success") {
-const c = document.getElementById("toast-container");
-const colors = { success: "bg-emerald-500", error: "bg-red-500", info: "bg-blue-500" };
-const bg = colors[t] || colors.success;
-const id = "toast-" + Date.now();
-const toast = `<div id="${id}" class="toast ${bg} text-white px-4 py-3 rounded-lg shadow-lg max-w-sm"><p class="text-sm font-medium">${escapeHtml(m)}</p></div>`;
-c.insertAdjacentHTML("beforeend", toast);
-setTimeout(() => document.getElementById(id)?.remove(), 3000);
+  const c = document.getElementById("toast-container");
+  const colors = { success: "bg-emerald-600", error: "bg-red-600", info: "bg-slate-700" };
+  const bg = colors[t] || colors.success;
+  const id = "toast-" + Date.now();
+  const toast = `<div id="${id}" class="toast ${bg} text-white px-4 py-3 rounded-lg shadow-lg max-w-sm"><p class="text-sm font-medium">${escapeHtml(m)}</p></div>`;
+  c.insertAdjacentHTML("beforeend", toast);
+  setTimeout(() => document.getElementById(id)?.remove(), 3000);
 }
 
 function renderPhase(p) {
-const phase = phasesData[p];
-if (!phase) return;
-currentPhaseDuration = phase.duration || 0;
-resetTimer();
-const content = document.getElementById("phase-content");
-const formHtml = phase.fields.map(f => {
-const value = sessionData[p]?.[f.id] || "";
-const input = f.type === "textarea"
-? `<textarea id="${f.id}" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 resize-none" rows="4" placeholder="${escapeHtml(f.placeholder)}">${escapeHtml(value)}</textarea>`
-: `<input type="text" id="${f.id}" value="${escapeHtml(value)}" placeholder="${escapeHtml(f.placeholder)}" class="w-full bg-gray-50 border-2 border-gray-300 rounded-lg px-4 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500" />`;
-return `<div class="mb-4"><label for="${f.id}" class="block text-sm font-medium text-gray-700 mb-2">${f.label}</label>${input}</div>`;
-}).join("");
-content.innerHTML = `<h2 class="text-xl font-bold mb-2 text-gray-900">${phase.title}</h2><p class="text-sm text-gray-600 mb-4 flex items-center gap-2"><span>⏱️ ${phase.duration} minutos</span><span>•</span><span>${phase.description}</span></p><form id="phase-form">${formHtml}</form>`;
-phase.fields.forEach(f => {
-document.getElementById(f.id)?.addEventListener("input", e => {
-if (!sessionData[p]) sessionData[p] = {};
-sessionData[p][f.id] = e.target.value;
-saveLastSessionSnapshot();
-});
-});
+  const phase = phasesData[p];
+  if (!phase) return;
+  currentPhaseDuration = phase.duration || 0;
+  resetTimer();
+  const content = document.getElementById("phase-content");
+  const formHtml = phase.fields.map(f => {
+    const value = sessionData[p]?.[f.id] || "";
+    const input = f.type === "textarea"
+      ? `<textarea id="${f.id}" class="field-input resize-none" rows="4" placeholder="${escapeHtml(f.placeholder)}">${escapeHtml(value)}</textarea>`
+      : `<input type="text" id="${f.id}" value="${escapeHtml(value)}" placeholder="${escapeHtml(f.placeholder)}" class="field-input" />`;
+    return `<div class="mb-4"><label for="${f.id}" class="block text-sm font-medium text-gray-700 mb-1.5">${f.label}</label>${input}</div>`;
+  }).join("");
+  content.innerHTML = `<h2 class="text-xl font-semibold mb-1" style="color: var(--navy);">${phase.title}</h2><p class="text-sm text-gray-500 mb-5 pb-4 border-b border-gray-100">Duração sugerida: ${phase.duration} minutos &nbsp;|&nbsp; ${phase.description}</p><form id="phase-form" onsubmit="return false;">${formHtml}</form>`;
+  phase.fields.forEach(f => {
+    document.getElementById(f.id)?.addEventListener("input", e => {
+      if (!sessionData[p]) sessionData[p] = {};
+      sessionData[p][f.id] = e.target.value;
+      saveLastSessionSnapshot();
+    });
+  });
 }
 
 function updatePhaseNavigation(p) {
-document.querySelectorAll(".phase-card").forEach(c => {
-c.classList.toggle("active", c.dataset.phase === p);
-});
+  document.querySelectorAll(".phase-card").forEach(c => {
+    c.classList.toggle("active", c.dataset.phase === p);
+  });
 }
 
 function renderIdeas() {
-const c = document.getElementById("ideas-list");
-if (ideasList.length === 0) {
-c.innerHTML = `<p class="text-gray-500 text-sm text-center">Nenhuma ideia registrada ainda.</p>`;
-} else {
-c.innerHTML = ideasList.map((i, x) => `<div class="bg-gray-50 border-2 border-gray-300 rounded-lg p-3 flex justify-between items-start gap-2"><p class="text-sm flex-1 text-gray-800">${escapeHtml(i)}</p><button data-idea-index="${x}" class="delete-idea text-gray-400 hover:text-red-500 flex-shrink-0" aria-label="Excluir ideia">✕</button></div>`).join("");
-document.querySelectorAll(".delete-idea").forEach(b => {
-b.addEventListener("click", e => {
-const x = Number(e.currentTarget.dataset.ideaIndex);
-ideasList.splice(x, 1);
-renderIdeas();
-saveLastSessionSnapshot();
-});
-});
-}
+  const c = document.getElementById("ideas-list");
+  if (ideasList.length === 0) {
+    c.innerHTML = `<p class="text-gray-400 text-sm text-center">Nenhuma ideia registrada ainda.</p>`;
+  } else {
+    c.innerHTML = ideasList.map((i, x) => `<div class="bg-gray-50 border border-gray-200 rounded-lg p-3 flex justify-between items-start gap-2"><p class="text-sm flex-1 text-gray-800 whitespace-pre-wrap">${escapeHtml(i)}</p><button data-idea-index="${x}" class="delete-idea text-gray-400 hover:text-red-600 flex-shrink-0 text-lg leading-none" aria-label="Excluir ideia">&times;</button></div>`).join("");
+    document.querySelectorAll(".delete-idea").forEach(b => {
+      b.addEventListener("click", e => {
+        const x = Number(e.currentTarget.dataset.ideaIndex);
+        ideasList.splice(x, 1);
+        renderIdeas();
+        saveLastSessionSnapshot();
+      });
+    });
+  }
 }
 
 function readSessions() { try { return JSON.parse(localStorage.getItem(STORAGE_SESSIONS_KEY)) || []; } catch { return []; } }
 function writeSessions(l) { localStorage.setItem(STORAGE_SESSIONS_KEY, JSON.stringify(l)); }
 function saveLastSessionSnapshot() { const s = collectSessionData({ includeId: false }); localStorage.setItem(STORAGE_LAST_SESSION_KEY, JSON.stringify(s)); }
 function restoreLastSessionSnapshot() { try { const s = JSON.parse(localStorage.getItem(STORAGE_LAST_SESSION_KEY)); if (!s) return false; loadSessionData(s); return true; } catch { return false; } }
-function collectSessionData({ includeId = true } = {}) { const n = document.getElementById("session-name").value || "Sessão sem nome"; return { id: includeId ? String(Date.now()) : undefined, session_name: n, current_phase: currentPhase, sessionData, ideasList, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }; }
-function loadSessionData(s) { document.getElementById("session-name").value = s.session_name || ""; sessionData = s.sessionData || {}; ideasList = s.ideasList || []; currentPhase = s.current_phase || "revisao"; updatePhaseNavigation(currentPhase); renderPhase(currentPhase); renderIdeas(); saveLastSessionSnapshot(); }
+function collectSessionData({ includeId = true } = {}) {
+  const n = document.getElementById("session-name").value || "Sessão sem nome";
+  const g = document.getElementById("group-name").value || "";
+  return { id: includeId ? String(Date.now()) : undefined, session_name: n, group_name: g, current_phase: currentPhase, sessionData, ideasList, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+}
+function loadSessionData(s) {
+  document.getElementById("session-name").value = s.session_name || "";
+  document.getElementById("group-name").value = s.group_name || "";
+  sessionData = s.sessionData || {};
+  ideasList = s.ideasList || [];
+  currentPhase = s.current_phase || "revisao";
+  updatePhaseNavigation(currentPhase);
+  renderPhase(currentPhase);
+  renderIdeas();
+  saveLastSessionSnapshot();
+}
 
 function clearChat() {
   document.getElementById("chat-messages").innerHTML = "";
 }
 
 function startNewSession() {
-  // Limpa dados do canvas
   sessionData = {};
   ideasList = [];
   currentPhase = "revisao";
   document.getElementById("session-name").value = "";
+  document.getElementById("group-name").value = "";
   document.getElementById("ideas-field").value = "";
-
-  // Limpa localStorage de rascunho
   localStorage.removeItem(STORAGE_LAST_SESSION_KEY);
-
-  // Gera novo session_id para o chat (limpa memória do Worker)
   generateNewSessionId();
-
-  // Limpa histórico visual do chat
   clearChat();
-
-  // Reseta timer
   resetTimer();
-
-  // Rerenderiza fase inicial
   updatePhaseNavigation(currentPhase);
   renderPhase(currentPhase);
   renderIdeas();
-
-  showToast("Nova sessão iniciada! 🆕", "info");
+  showToast("Nova sessão iniciada.", "info");
 }
 
 function renderSessionsModal() {
-const m = document.getElementById("sessions-modal");
-const l = document.getElementById("sessions-list");
-const s = readSessions();
-if (s.length === 0) {
-l.innerHTML = `<p class="text-gray-500 text-sm text-center py-4">Nenhuma sessão salva ainda.</p>`;
-} else {
-l.innerHTML = s.map(x => `<div class="bg-gray-50 border-2 border-gray-300 rounded-lg p-3 flex justify-between items-center"><div><p class="font-medium text-gray-900">${escapeHtml(x.session_name || "Sessão")}</p><p class="text-xs text-gray-600">${new Date(x.created_at || Date.now()).toLocaleDateString("pt-BR")}</p></div><div class="flex gap-2"><button data-load="${x.id}" class="load-session bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">Carregar</button><button data-del="${x.id}" class="delete-session bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">Excluir</button></div></div>`).join("");
-l.querySelectorAll(".load-session").forEach(b => { b.addEventListener("click", () => { const i = b.dataset.load; const p = s.find(x => x.id === i); if (p) { loadSessionData(p); m.classList.add("hidden"); showToast("Sessão carregada!"); } }); });
-l.querySelectorAll(".delete-session").forEach(b => { b.addEventListener("click", () => { const i = b.dataset.del; const n = s.filter(x => x.id !== i); writeSessions(n); renderSessionsModal(); showToast("Sessão excluída!"); }); });
-}
-m.classList.remove("hidden");
+  const m = document.getElementById("sessions-modal");
+  const l = document.getElementById("sessions-list");
+  const s = readSessions();
+  if (s.length === 0) {
+    l.innerHTML = `<p class="text-gray-500 text-sm text-center py-4">Nenhuma sessão salva ainda.</p>`;
+  } else {
+    l.innerHTML = s.map(x => `<div class="bg-gray-50 border border-gray-200 rounded-lg p-3 flex justify-between items-center"><div><p class="font-medium text-gray-900">${escapeHtml(x.session_name || "Sessão")}</p><p class="text-xs text-gray-500">${x.group_name ? escapeHtml(x.group_name) + " &middot; " : ""}${new Date(x.created_at || Date.now()).toLocaleDateString("pt-BR")}</p></div><div class="flex gap-2"><button data-load="${x.id}" class="load-session btn btn-primary" style="padding:5px 12px;">Carregar</button><button data-del="${x.id}" class="delete-session btn btn-danger-soft" style="padding:5px 12px;">Excluir</button></div></div>`).join("");
+    l.querySelectorAll(".load-session").forEach(b => { b.addEventListener("click", () => { const i = b.dataset.load; const p = s.find(x => x.id === i); if (p) { loadSessionData(p); m.classList.add("hidden"); showToast("Sessão carregada."); } }); });
+    l.querySelectorAll(".delete-session").forEach(b => { b.addEventListener("click", () => { const i = b.dataset.del; const n = s.filter(x => x.id !== i); writeSessions(n); renderSessionsModal(); showToast("Sessão excluída."); }); });
+  }
+  m.classList.remove("hidden");
 }
 
 function generatePDF() {
-const { jsPDF } = window.jspdf;
-const d = new jsPDF();
-d.setFontSize(18);
-d.text("Oficina de Ideação - Relatório", 14, 18);
-d.setFontSize(11);
-d.text(`Sessão: ${document.getElementById("session-name").value || "Sem nome"}`, 14, 26);
-d.text(`Data: ${new Date().toLocaleDateString("pt-BR")}`, 14, 32);
-let y = 44;
-Object.keys(phasesData).forEach(pk => {
-const p = phasesData[pk];
-const s = sessionData[pk] || {};
-d.setFontSize(13);
-d.text(p.title.replace(/[^\w\sÀ-ú-]/g, ""), 14, y);
-y += 7;
-d.setFontSize(10);
-p.fields.forEach(f => {
-const v = (s[f.id] || "-").toString();
-const l = d.splitTextToSize(`${f.label}: ${v}`, 180);
-l.forEach(ln => {
-if (y > 280) { d.addPage(); y = 18; }
-d.text(ln, 14, y);
-y += 5.5;
-});
-});
-y += 4;
-if (y > 280) { d.addPage(); y = 18; }
-});
-if (ideasList.length) {
-if (y > 265) { d.addPage(); y = 18; }
-d.setFontSize(13);
-d.text("Ideias e Anotações", 14, y);
-y += 7;
-d.setFontSize(10);
-ideasList.forEach((i, x) => {
-const l = d.splitTextToSize(`${x + 1}. ${i}`, 180);
-l.forEach(ln => {
-if (y > 280) { d.addPage(); y = 18; }
-d.text(ln, 14, y);
-y += 5.5;
-});
-});
-}
-d.save("oficina-ideacao.pdf");
-showToast("PDF gerado com sucesso!");
+  const { jsPDF } = window.jspdf;
+  const d = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+
+  const pageW = d.internal.pageSize.getWidth();
+  const pageH = d.internal.pageSize.getHeight();
+  const margin = 18;
+  const contentW = pageW - margin * 2;
+  const navy = [30, 42, 90];
+  const blue = [53, 99, 180];
+  const pale = [239, 244, 252];
+  const ink = [45, 52, 64];
+  const muted = [105, 114, 128];
+  const lineColor = [220, 226, 235];
+  const sessionName = (document.getElementById("session-name").value || "Sessão sem nome").trim();
+  const groupName = (document.getElementById("group-name").value || "Não informado").trim();
+  const dateText = new Date().toLocaleDateString("pt-BR");
+  let y = 0;
+
+  const cleanText = (value) => String(value ?? "").replace(/\r\n/g, "\n").trim();
+  const split = (value, width, fontSize = 10) => {
+    d.setFontSize(fontSize);
+    return d.splitTextToSize(cleanText(value), width);
+  };
+
+  function drawHeader() {
+    d.setFillColor(...navy);
+    d.rect(0, 0, pageW, 12, "F");
+    d.setTextColor(255, 255, 255);
+    d.setFont("helvetica", "bold");
+    d.setFontSize(8);
+    d.text("INCLUIA  |  OFICINA DE IDEAÇÃO", margin, 7.5);
+    d.setFont("helvetica", "normal");
+    d.text(`${groupName}  |  ${dateText}`, pageW - margin, 7.5, { align: "right" });
+  }
+
+  function newContentPage() {
+    d.addPage();
+    drawHeader();
+    y = 23;
+  }
+
+  function ensureSpace(height) {
+    if (y + height > pageH - 20) newContentPage();
+  }
+
+  function drawSectionTitle(title) {
+    const titleLines = split(title, contentW - 8, 12);
+    const blockH = Math.max(12, titleLines.length * 5.5 + 5);
+    ensureSpace(blockH + 5);
+    d.setFillColor(...pale);
+    d.roundedRect(margin, y - 4, contentW, blockH, 2, 2, "F");
+    d.setFillColor(...blue);
+    d.roundedRect(margin, y - 4, 2.2, blockH, 1, 1, "F");
+    d.setTextColor(...navy);
+    d.setFont("helvetica", "bold");
+    d.setFontSize(12);
+    d.text(titleLines, margin + 7, y + 2);
+    y += blockH + 2;
+  }
+
+  function drawField(label, value) {
+    const textValue = cleanText(value) || "Não preenchido";
+    const labelLines = split(label, contentW, 9);
+    const valueLines = split(textValue, contentW, 10);
+    const fieldH = labelLines.length * 4.2 + 2 + valueLines.length * 4.8 + 5;
+    ensureSpace(Math.min(fieldH, pageH - 40));
+
+    d.setTextColor(...muted);
+    d.setFont("helvetica", "bold");
+    d.setFontSize(9);
+    d.text(labelLines, margin, y);
+    y += labelLines.length * 4.2 + 1.5;
+
+    d.setTextColor(...ink);
+    d.setFont("helvetica", "normal");
+    d.setFontSize(10);
+    valueLines.forEach((line) => {
+      if (y > pageH - 19) {
+        newContentPage();
+        d.setTextColor(...ink);
+        d.setFont("helvetica", "normal");
+        d.setFontSize(10);
+      }
+      d.text(line, margin, y);
+      y += 4.8;
+    });
+
+    y += 3;
+    d.setDrawColor(...lineColor);
+    d.setLineWidth(0.25);
+    d.line(margin, y, pageW - margin, y);
+    y += 5;
+  }
+
+  // Capa
+  d.setFillColor(...navy);
+  d.rect(0, 0, pageW, 76, "F");
+  d.setFillColor(...blue);
+  d.rect(0, 76, pageW, 3, "F");
+  d.setTextColor(255, 255, 255);
+  d.setFont("helvetica", "bold");
+  d.setFontSize(11);
+  d.text("INCLUIA", margin, 25);
+  d.setFontSize(24);
+  d.text("Relatório da Oficina", margin, 43);
+  d.setFontSize(17);
+  d.setFont("helvetica", "normal");
+  d.text("de Ideação", margin, 53);
+  d.setFontSize(10);
+  d.text("Processo criativo para soluções em educação inclusiva", margin, 64);
+
+  // Grupo (caixa em destaque)
+  d.setFont("helvetica", "bold");
+  const groupLines = split(groupName, contentW - 16, 18);
+  const boxH = 18 + groupLines.length * 8;
+  d.setFillColor(...pale);
+  d.roundedRect(margin, 90, contentW, boxH, 3, 3, "F");
+  d.setFillColor(...blue);
+  d.roundedRect(margin, 90, 2.5, boxH, 1, 1, "F");
+  d.setTextColor(...muted);
+  d.setFontSize(8.5);
+  d.text("GRUPO", margin + 8, 98);
+  d.setTextColor(...navy);
+  d.setFontSize(18);
+  d.text(groupLines, margin + 8, 108);
+  y = 90 + boxH + 10;
+
+  // Sessão
+  d.setTextColor(...muted);
+  d.setFont("helvetica", "bold");
+  d.setFontSize(9);
+  d.text("NOME DA SESSÃO", margin, y);
+  y += 8;
+  d.setTextColor(...navy);
+  d.setFontSize(14);
+  d.setFont("helvetica", "bold");
+  const sessionLines = split(sessionName, contentW, 14);
+  d.text(sessionLines, margin, y);
+  y += sessionLines.length * 6.5 + 8;
+
+  d.setDrawColor(...lineColor);
+  d.setLineWidth(0.5);
+  d.line(margin, y, pageW - margin, y);
+  y += 12;
+
+  d.setTextColor(...muted);
+  d.setFont("helvetica", "normal");
+  d.setFontSize(10);
+  d.text("Data de emissão", margin, y);
+  d.setTextColor(...ink);
+  d.setFont("helvetica", "bold");
+  d.text(dateText, margin + 35, y);
+  y += 15;
+
+  d.setFillColor(...pale);
+  d.roundedRect(margin, y, contentW, 29, 3, 3, "F");
+  d.setTextColor(...navy);
+  d.setFont("helvetica", "bold");
+  d.setFontSize(10);
+  d.text("Sobre este relatório", margin + 7, y + 8);
+  d.setTextColor(...ink);
+  d.setFont("helvetica", "normal");
+  d.setFontSize(9);
+  const intro = split("Este documento reúne os registros preenchidos durante as etapas da oficina, além das ideias e anotações adicionadas pela equipe.", contentW - 14, 9);
+  d.text(intro, margin + 7, y + 15);
+
+  newContentPage();
+
+  Object.keys(phasesData).forEach((pk, index) => {
+    const phase = phasesData[pk];
+    const saved = sessionData[pk] || {};
+    drawSectionTitle(`${index}. ${phase.title}`);
+    if (phase.description) {
+      const descLines = split(phase.description, contentW, 9);
+      ensureSpace(descLines.length * 4.2 + 3);
+      d.setTextColor(...muted);
+      d.setFont("helvetica", "italic");
+      d.setFontSize(9);
+      d.text(descLines, margin, y);
+      y += descLines.length * 4.2 + 4;
+    }
+    phase.fields.forEach((field) => drawField(field.label, saved[field.id] || ""));
+    y += 3;
+  });
+
+  if (ideasList.length) {
+    drawSectionTitle("Ideias e anotações");
+    ideasList.forEach((idea, index) => {
+      const lines = split(`${index + 1}. ${idea}`, contentW - 2, 10);
+      const itemH = lines.length * 4.8 + 5;
+      ensureSpace(itemH);
+      d.setFillColor(...blue);
+      d.circle(margin + 2, y - 1.1, 1, "F");
+      d.setTextColor(...ink);
+      d.setFont("helvetica", "normal");
+      d.setFontSize(10);
+      d.text(lines, margin + 6, y);
+      y += itemH;
+    });
+  }
+
+  // Rodapé com "Página X de Y"
+  const totalPages = d.internal.getNumberOfPages();
+  for (let page = 1; page <= totalPages; page++) {
+    d.setPage(page);
+    d.setDrawColor(...lineColor);
+    d.setLineWidth(0.35);
+    d.line(margin, pageH - 13, pageW - margin, pageH - 13);
+    d.setTextColor(...muted);
+    d.setFont("helvetica", "normal");
+    d.setFontSize(8);
+    d.text(page === 1 ? "IncluIA - Documento gerado automaticamente" : "Relatório de trabalho - IncluIA", margin, pageH - 7.5);
+    d.text(`Página ${page} de ${totalPages}`, pageW - margin, pageH - 7.5, { align: "right" });
+  }
+
+  const safeGroup = groupName.toLowerCase().replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "");
+  const filename = `relatorio-incluia${safeGroup && safeGroup !== "nao-informado" ? "-" + safeGroup : ""}-${new Date().toISOString().slice(0, 10)}.pdf`;
+  d.save(filename);
+  showToast("Relatório em PDF gerado com sucesso.", "success");
 }
 
 function escapeHtml(s) { return String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;"); }
 
 function addChatMessage(content, isUser = false, fillData = null) {
-const container = document.getElementById("chat-messages");
-const msgId = "msg-" + Date.now() + Math.random().toString(36).slice(2);
-let messageHtml;
-if (isUser) {
-messageHtml = `<div class="flex gap-3 justify-end"><div class="bg-indigo-600 rounded-xl rounded-tr-none p-3 max-w-[85%] shadow-sm"><p class="text-sm text-white">${content}</p></div><div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0"><span class="text-sm">👤</span></div></div>`;
-} else {
-const hasFill = fillData && Object.keys(fillData).length > 0;
-const fillBtn = hasFill
-? `<button class="btn-fill-fields flex items-center gap-1 text-xs bg-emerald-100 hover:bg-emerald-200 text-emerald-700 px-2 py-1 rounded-lg transition font-medium" data-msg-id="${msgId}" title="Preencher campos da fase com esta sugestão">✏️ Preencher campos</button>`
-: "";
-messageHtml = `<div class="flex gap-3" id="${msgId}">
-<div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0"><span class="text-sm">🤖</span></div>
-<div class="bg-white border-2 border-gray-300 rounded-xl rounded-tl-none p-3 max-w-[85%] shadow-sm flex flex-col gap-2">
+  const container = document.getElementById("chat-messages");
+  const msgId = "msg-" + Date.now() + Math.random().toString(36).slice(2);
+  let messageHtml;
+  if (isUser) {
+    messageHtml = `<div class="flex gap-3 justify-end"><div class="rounded-xl rounded-tr-none p-3 max-w-[85%] shadow-sm text-white" style="background: var(--blue);"><p class="text-sm">${content}</p></div></div>`;
+  } else {
+    const hasFill = fillData && Object.keys(fillData).length > 0;
+    const fillBtn = hasFill
+      ? `<button class="btn-fill-fields text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-md transition font-medium" data-msg-id="${msgId}" title="Preencher campos da fase com esta sugestão">Preencher campos</button>`
+      : "";
+    messageHtml = `<div class="flex gap-3" id="${msgId}">
+<div class="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 text-white text-xs font-bold" style="background: var(--navy);">IA</div>
+<div class="bg-white border border-gray-200 rounded-xl rounded-tl-none p-3 max-w-[85%] shadow-sm flex flex-col gap-2">
 <p class="text-sm text-gray-800 whitespace-pre-wrap">${content}</p>
-<div class="flex gap-2 flex-wrap pt-1 border-t border-gray-100">
-<button class="btn-copy-msg flex items-center gap-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded-lg transition font-medium" data-msg-id="${msgId}" title="Copiar resposta">📋 Copiar</button>
+<div class="flex gap-2 flex-wrap pt-2 border-t border-gray-100">
+<button class="btn-copy-msg text-xs bg-white hover:bg-gray-50 text-gray-600 border border-gray-200 px-2.5 py-1 rounded-md transition font-medium" data-msg-id="${msgId}" title="Copiar resposta">Copiar</button>
 ${fillBtn}
 </div>
 </div>
 </div>`;
-}
-container.insertAdjacentHTML("beforeend", messageHtml);
+  }
+  container.insertAdjacentHTML("beforeend", messageHtml);
 
-const copyBtn = container.querySelector(`[data-msg-id="${msgId}"].btn-copy-msg`);
-if (copyBtn) {
-copyBtn.addEventListener("click", () => {
-navigator.clipboard.writeText(content).then(() => {
-copyBtn.textContent = "✅ Copiado!";
-setTimeout(() => { copyBtn.innerHTML = "📋 Copiar"; }, 2000);
-});
-});
-}
+  const copyBtn = container.querySelector(`[data-msg-id="${msgId}"].btn-copy-msg`);
+  if (copyBtn) {
+    copyBtn.addEventListener("click", () => {
+      navigator.clipboard.writeText(content).then(() => {
+        copyBtn.textContent = "Copiado";
+        setTimeout(() => { copyBtn.textContent = "Copiar"; }, 2000);
+      });
+    });
+  }
 
-if (fillData) {
-const fillBtn2 = container.querySelector(`[data-msg-id="${msgId}"].btn-fill-fields`);
-if (fillBtn2) {
-fillBtn2.addEventListener("click", () => {
-applyFillData(fillData);
-fillBtn2.textContent = "✅ Preenchido!";
-setTimeout(() => { fillBtn2.innerHTML = "✏️ Preencher campos"; }, 2000);
-});
-}
-}
+  if (fillData) {
+    const fillBtn2 = container.querySelector(`[data-msg-id="${msgId}"].btn-fill-fields`);
+    if (fillBtn2) {
+      fillBtn2.addEventListener("click", () => {
+        applyFillData(fillData);
+        fillBtn2.textContent = "Preenchido";
+        setTimeout(() => { fillBtn2.textContent = "Preencher campos"; }, 2000);
+      });
+    }
+  }
 
-container.scrollTop = container.scrollHeight;
+  container.scrollTop = container.scrollHeight;
 }
 
 function applyFillData(fillData) {
-const phase = currentPhase;
-if (!sessionData[phase]) sessionData[phase] = {};
-Object.entries(fillData).forEach(([fieldId, value]) => {
-const el = document.getElementById(fieldId);
-if (el && value) {
-el.value = value;
-sessionData[phase][fieldId] = value;
-}
-});
-saveLastSessionSnapshot();
-showToast("Campos preenchidos com sugestão da IA! ✨", "success");
+  const phase = currentPhase;
+  if (!sessionData[phase]) sessionData[phase] = {};
+  Object.entries(fillData).forEach(([fieldId, value]) => {
+    const el = document.getElementById(fieldId);
+    if (el && value) {
+      el.value = value;
+      sessionData[phase][fieldId] = value;
+    }
+  });
+  saveLastSessionSnapshot();
+  showToast("Campos preenchidos com a sugestão da IA.", "success");
 }
 
 function setSending(isSending) {
-const btn = document.getElementById("btn-send");
-const icon = document.getElementById("send-icon");
-btn.disabled = isSending;
-if (isSending) icon.innerHTML = `<span class="inline-block spinner">⟳</span>`;
-else icon.textContent = "➤";
+  const btn = document.getElementById("btn-send");
+  const icon = document.getElementById("send-icon");
+  btn.disabled = isSending;
+  if (isSending) icon.innerHTML = `<span class="spinner">&#10227;</span>`;
+  else icon.textContent = "Enviar";
 }
 
 async function handleSend() {
-const input = document.getElementById("chat-input");
-const userMessage = input.value.trim();
-if (!userMessage) return;
+  const input = document.getElementById("chat-input");
+  const userMessage = input.value.trim();
+  if (!userMessage) return;
 
-const phaseFields = phasesData[currentPhase]?.fields || [];
-const fieldsList = phaseFields.map(f => `"${f.id}" (${f.label})`).join(", ");
+  const phaseFields = phasesData[currentPhase]?.fields || [];
+  const fieldsList = phaseFields.map(f => `"${f.id}" (${f.label})`).join(", ");
+  const groupName = document.getElementById("group-name").value.trim();
 
-let contexto = "CONTEXTO DO PROJETO (Canvas de Inovação):\n\n";
-Object.keys(phasesData).forEach(phase => {
-if (sessionData[phase]) {
-contexto += `${phasesData[phase].title}\n`;
-Object.entries(sessionData[phase]).forEach(([key, value]) => {
-if (value) {
-const label = phasesData[phase].fields.find(f => f.id === key)?.label || key;
-contexto += `- ${label}: ${value}\n`;
-}
-});
-contexto += "\n";
-}
-});
+  let contexto = "CONTEXTO DO PROJETO (Canvas de Inovação):\n\n";
+  if (groupName) contexto += `Grupo: ${groupName}\n\n`;
+  Object.keys(phasesData).forEach(phase => {
+    if (sessionData[phase]) {
+      contexto += `${phasesData[phase].title}\n`;
+      Object.entries(sessionData[phase]).forEach(([key, value]) => {
+        if (value) {
+          const label = phasesData[phase].fields.find(f => f.id === key)?.label || key;
+          contexto += `- ${label}: ${value}\n`;
+        }
+      });
+      contexto += "\n";
+    }
+  });
 
-const instrucaoPreenchimento = phaseFields.length > 0
-? `\n\nALÉM DA SUA RESPOSTA, se a sua resposta contiver sugestões concretas que possam preencher os campos da fase atual (${phasesData[currentPhase]?.title}), inclua ao final um bloco JSON no seguinte formato exato (sem markdown, apenas o bloco entre ---FILL_START--- e ---FILL_END---):\n---FILL_START---\n{"${phaseFields[0].id}": "texto sugerido para este campo", ...}\n---FILL_END---\nOs campos disponíveis são: ${fieldsList}. Só inclua o bloco JSON se tiver sugestões relevantes. Não invente se não tiver contexto suficiente.`
-: "";
+  const instrucaoPreenchimento = phaseFields.length > 0
+    ? `\n\nALÉM DA SUA RESPOSTA, se a sua resposta contiver sugestões concretas que possam preencher os campos da fase atual (${phasesData[currentPhase]?.title}), inclua ao final um bloco JSON no seguinte formato exato (sem markdown, apenas o bloco entre ---FILL_START--- e ---FILL_END---):\n---FILL_START---\n{"${phaseFields[0].id}": "texto sugerido para este campo", ...}\n---FILL_END---\nOs campos disponíveis são: ${fieldsList}. Só inclua o bloco JSON se tiver sugestões relevantes. Não invente se não tiver contexto suficiente.`
+    : "";
 
-const perguntaCompleta = contexto + `PERGUNTA ESPECÍFICA:\n${userMessage}` + instrucaoPreenchimento;
+  const perguntaCompleta = contexto + `PERGUNTA ESPECÍFICA:\n${userMessage}` + instrucaoPreenchimento;
 
-addChatMessage(escapeHtml(userMessage), true);
-input.value = "";
-setSending(true);
+  addChatMessage(escapeHtml(userMessage), true);
+  input.value = "";
+  setSending(true);
 
-try {
-const response = await fetch(WORKER_API_URL, {
-method: "POST",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify({
-question: perguntaCompleta,
-session_id: chatSessionId,
-phase: currentPhase || null,
-canvas: sessionData || {}
-})
-});
+  try {
+    const response = await fetch(WORKER_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        question: perguntaCompleta,
+        session_id: chatSessionId,
+        phase: currentPhase || null,
+        canvas: sessionData || {}
+      })
+    });
 
-if (!response.ok) throw new Error(`Erro ${response.status}: ${await response.text()}`);
+    if (!response.ok) throw new Error(`Erro ${response.status}: ${await response.text()}`);
 
-const data = await response.json();
-let answer = data.answer || "Não consegui gerar resposta.";
-const refs = data.refs || [];
+    const data = await response.json();
+    let answer = data.answer || "Não consegui gerar resposta.";
+    const refs = data.refs || [];
 
-if (refs.length > 0) {
-answer += "\n\n📚 Referências:\n";
-refs.forEach(ref => {
-answer += `\n[${ref.ref}] ${ref.authors} (${ref.year}). ${ref.title}`;
-if (ref.venue) answer += `\n${ref.venue}`;
-if (ref.url) answer += `\n${ref.url}`;
-answer += "\n";
-});
-}
+    if (refs.length > 0) {
+      answer += "\n\nReferências:\n";
+      refs.forEach(ref => {
+        answer += `\n[${ref.ref}] ${ref.authors} (${ref.year}). ${ref.title}`;
+        if (ref.venue) answer += `\n${ref.venue}`;
+        if (ref.url) answer += `\n${ref.url}`;
+        answer += "\n";
+      });
+    }
 
-let fillData = null;
-let fillMatch = answer.match(/---\s*FILL[_\s]?START\s*---([\s\S]*?)---\s*FILL[_\s]?END\s*---/i);
-if (!fillMatch) fillMatch = answer.match(/---\s*(\{[\s\S]*?\})\s*---\s*FILL[_\s]?END\s*---/i);
-if (!fillMatch) fillMatch = answer.match(/---\s*FILL[_\s]?START\s*---\s*(\{[\s\S]*?\})\s*---/i);
+    let fillData = null;
+    let fillMatch = answer.match(/---\s*FILL[_\s]?START\s*---([\s\S]*?)---\s*FILL[_\s]?END\s*---/i);
+    if (!fillMatch) fillMatch = answer.match(/---\s*(\{[\s\S]*?\})\s*---\s*FILL[_\s]?END\s*---/i);
+    if (!fillMatch) fillMatch = answer.match(/---\s*FILL[_\s]?START\s*---\s*(\{[\s\S]*?\})\s*---/i);
 
-if (fillMatch) {
-try {
-const jsonStr = fillMatch[1].trim();
-fillData = JSON.parse(jsonStr);
-answer = answer.replace(fillMatch[0], "").trim();
-} catch(e) { fillData = null; }
-}
+    if (fillMatch) {
+      try {
+        const jsonStr = fillMatch[1].trim();
+        fillData = JSON.parse(jsonStr);
+        answer = answer.replace(fillMatch[0], "").trim();
+      } catch(e) { fillData = null; }
+    }
 
-answer = answer
-.replace(/---\s*FILL[_\s]?START\s*---[\s\S]*/i, "")
-.replace(/---\s*FILL[_\s]?END\s*---/ig, "")
-.replace(/---\s*\{[\s\S]*?\}\s*---\s*FILL[_\s]?END\s*---/ig, "")
-.trim();
+    answer = answer
+      .replace(/---\s*FILL[_\s]?START\s*---[\s\S]*/i, "")
+      .replace(/---\s*FILL[_\s]?END\s*---/ig, "")
+      .replace(/---\s*\{[\s\S]*?\}\s*---\s*FILL[_\s]?END\s*---/ig, "")
+      .trim();
 
-addChatMessage(answer, false, fillData);
-} catch (error) {
-addChatMessage(`❌ Erro ao consultar a IA:\n${String(error.message || error)}`, false);
-showToast("Erro ao consultar a IA", "error");
-} finally {
-setSending(false);
-}
+    addChatMessage(answer, false, fillData);
+  } catch (error) {
+    addChatMessage(`Erro ao consultar a IA:\n${String(error.message || error)}`, false);
+    showToast("Erro ao consultar a IA", "error");
+  } finally {
+    setSending(false);
+  }
 }
 
 document.getElementById("btn-expand-chat").addEventListener("click", () => {
-const widget = document.getElementById("chat-widget");
-const isExpanded = widget.dataset.expanded === "true";
-if (isExpanded) {
-widget.classList.remove("inset-0", "rounded-none", "w-full", "h-full");
-widget.classList.add("bottom-4", "right-4", "w-[500px]", "h-[600px]", "rounded-2xl");
-widget.dataset.expanded = "false";
-document.getElementById("btn-expand-chat").textContent = "⛶";
-} else {
-widget.classList.remove("bottom-4", "right-4", "w-[500px]", "h-[600px]", "rounded-2xl");
-widget.classList.add("inset-0", "rounded-none", "w-full", "h-full");
-widget.dataset.expanded = "true";
-document.getElementById("btn-expand-chat").textContent = "⊟";
-}
-document.getElementById("chat-input").focus();
+  const widget = document.getElementById("chat-widget");
+  const isExpanded = widget.dataset.expanded === "true";
+  if (isExpanded) {
+    widget.classList.remove("inset-0", "rounded-none", "w-full", "h-full");
+    widget.classList.add("bottom-4", "right-4", "w-[500px]", "h-[600px]", "rounded-xl");
+    widget.dataset.expanded = "false";
+    document.getElementById("btn-expand-chat").textContent = "Expandir";
+  } else {
+    widget.classList.remove("bottom-4", "right-4", "w-[500px]", "h-[600px]", "rounded-xl");
+    widget.classList.add("inset-0", "rounded-none", "w-full", "h-full");
+    widget.dataset.expanded = "true";
+    document.getElementById("btn-expand-chat").textContent = "Reduzir";
+  }
+  document.getElementById("chat-input").focus();
 });
 
 function init() {
-document.getElementById("btn-timer-start").addEventListener("click", startTimer);
-document.getElementById("btn-timer-pause").addEventListener("click", pauseTimer);
-document.getElementById("btn-timer-reset").addEventListener("click", resetTimer);
+  document.getElementById("btn-timer-start").addEventListener("click", startTimer);
+  document.getElementById("btn-timer-pause").addEventListener("click", pauseTimer);
+  document.getElementById("btn-timer-reset").addEventListener("click", resetTimer);
 
-document.querySelectorAll(".phase-card").forEach(c => {
-c.addEventListener("click", () => {
-currentPhase = c.dataset.phase;
-updatePhaseNavigation(currentPhase);
-renderPhase(currentPhase);
-saveLastSessionSnapshot();
-});
-});
+  document.querySelectorAll(".phase-card").forEach(c => {
+    c.addEventListener("click", () => {
+      currentPhase = c.dataset.phase;
+      updatePhaseNavigation(currentPhase);
+      renderPhase(currentPhase);
+      saveLastSessionSnapshot();
+    });
+  });
 
-document.getElementById("btn-add-idea").addEventListener("click", () => {
-const f = document.getElementById("ideas-field");
-const i = f.value.trim();
-if (i) {
-ideasList.push(i);
-f.value = "";
-renderIdeas();
-saveLastSessionSnapshot();
-showToast("Ideia adicionada!");
-}
-});
+  ["group-name", "session-name"].forEach(id => {
+    document.getElementById(id).addEventListener("input", saveLastSessionSnapshot);
+  });
 
-document.getElementById("btn-clear-ideas").addEventListener("click", () => { document.getElementById("ideas-field").value = ""; });
+  document.getElementById("btn-add-idea").addEventListener("click", () => {
+    const f = document.getElementById("ideas-field");
+    const i = f.value.trim();
+    if (i) {
+      ideasList.push(i);
+      f.value = "";
+      renderIdeas();
+      saveLastSessionSnapshot();
+      showToast("Ideia adicionada.");
+    }
+  });
 
-document.getElementById("btn-save").addEventListener("click", () => {
-const sessions = readSessions();
-const data = collectSessionData({ includeId: true });
-sessions.unshift(data);
-writeSessions(sessions.slice(0, 200));
-saveLastSessionSnapshot();
-showToast("Sessão salva!");
-});
+  document.getElementById("btn-clear-ideas").addEventListener("click", () => { document.getElementById("ideas-field").value = ""; });
 
-document.getElementById("btn-load").addEventListener("click", renderSessionsModal);
-document.getElementById("btn-close-modal").addEventListener("click", () => { document.getElementById("sessions-modal").classList.add("hidden"); });
-document.getElementById("sessions-modal").addEventListener("click", e => { if (e.target.id === "sessions-modal") document.getElementById("sessions-modal").classList.add("hidden"); });
+  document.getElementById("btn-save").addEventListener("click", () => {
+    const sessions = readSessions();
+    const data = collectSessionData({ includeId: true });
+    sessions.unshift(data);
+    writeSessions(sessions.slice(0, 200));
+    saveLastSessionSnapshot();
+    showToast("Sessão salva.");
+  });
 
-document.getElementById("btn-pdf").addEventListener("click", generatePDF);
+  document.getElementById("btn-load").addEventListener("click", renderSessionsModal);
+  document.getElementById("btn-close-modal").addEventListener("click", () => { document.getElementById("sessions-modal").classList.add("hidden"); });
+  document.getElementById("sessions-modal").addEventListener("click", e => { if (e.target.id === "sessions-modal") document.getElementById("sessions-modal").classList.add("hidden"); });
 
-// Botão Nova Sessão — abre modal de confirmação
-document.getElementById("btn-new-session").addEventListener("click", () => {
-  document.getElementById("confirm-modal").classList.remove("hidden");
-});
-document.getElementById("btn-confirm-cancel").addEventListener("click", () => {
-  document.getElementById("confirm-modal").classList.add("hidden");
-});
-document.getElementById("btn-confirm-ok").addEventListener("click", () => {
-  document.getElementById("confirm-modal").classList.add("hidden");
-  startNewSession();
-});
-document.getElementById("confirm-modal").addEventListener("click", e => {
-  if (e.target.id === "confirm-modal") document.getElementById("confirm-modal").classList.add("hidden");
-});
+  document.getElementById("btn-pdf").addEventListener("click", generatePDF);
 
-// Botão limpar chat
-document.getElementById("btn-clear-chat").addEventListener("click", () => {
-  clearChat();
-  generateNewSessionId();
-  showToast("Chat limpo!", "info");
-});
+  document.getElementById("btn-new-session").addEventListener("click", () => {
+    document.getElementById("confirm-modal").classList.remove("hidden");
+  });
+  document.getElementById("btn-confirm-cancel").addEventListener("click", () => {
+    document.getElementById("confirm-modal").classList.add("hidden");
+  });
+  document.getElementById("btn-confirm-ok").addEventListener("click", () => {
+    document.getElementById("confirm-modal").classList.add("hidden");
+    startNewSession();
+  });
+  document.getElementById("confirm-modal").addEventListener("click", e => {
+    if (e.target.id === "confirm-modal") document.getElementById("confirm-modal").classList.add("hidden");
+  });
 
-document.getElementById("btn-open-chat").addEventListener("click", () => {
-document.getElementById("chat-widget").classList.remove("hidden");
-document.getElementById("btn-open-chat").classList.add("hidden");
-document.getElementById("chat-input").focus();
-});
+  document.getElementById("btn-clear-chat").addEventListener("click", () => {
+    clearChat();
+    generateNewSessionId();
+    showToast("Chat limpo.", "info");
+  });
 
-document.getElementById("btn-close-chat").addEventListener("click", () => {
-document.getElementById("chat-widget").classList.add("hidden");
-document.getElementById("btn-open-chat").classList.remove("hidden");
-});
+  document.getElementById("btn-open-chat").addEventListener("click", () => {
+    document.getElementById("chat-widget").classList.remove("hidden");
+    document.getElementById("btn-open-chat").classList.add("hidden");
+    document.getElementById("chat-input").focus();
+  });
 
-document.getElementById("btn-send").addEventListener("click", handleSend);
-document.getElementById("chat-input").addEventListener("keydown", e => { if (e.key === "Enter") handleSend(); });
+  document.getElementById("btn-close-chat").addEventListener("click", () => {
+    document.getElementById("chat-widget").classList.add("hidden");
+    document.getElementById("btn-open-chat").classList.remove("hidden");
+  });
 
-const restored = restoreLastSessionSnapshot();
-if (restored) showToast("Rascunho restaurado", "info");
-else { updatePhaseNavigation(currentPhase); renderPhase(currentPhase); renderIdeas(); }
+  document.getElementById("btn-send").addEventListener("click", handleSend);
+  document.getElementById("chat-input").addEventListener("keydown", e => { if (e.key === "Enter") handleSend(); });
+
+  const restored = restoreLastSessionSnapshot();
+  if (restored) showToast("Rascunho restaurado.", "info");
+  else { updatePhaseNavigation(currentPhase); renderPhase(currentPhase); renderIdeas(); }
 }
 
 init();
