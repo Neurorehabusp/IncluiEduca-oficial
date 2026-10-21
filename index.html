@@ -6,8 +6,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 <title>IncluIA-Educa - Oficina de Ideação</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
@@ -646,14 +644,36 @@ function generatePDF() {
   showToast("Relatório em PDF gerado com sucesso.", "success");
 }
 
-function escapeHtml(s) { return String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;"); }
+function escapeHtml(s) {
+  return String(s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+// Converte **texto** em negrito e remove marcadores ** que sobrarem.
+// O conteúdo é escapado antes de inserir HTML para evitar que texto do chat vire código.
+function renderChatContent(text) {
+  return escapeHtml(text)
+    .replace(/\*\*(.+?)\*\*/gs, "<strong>$1</strong>")
+    .replace(/\*\*/g, "");
+}
+
+function plainChatContent(text) {
+  return String(text ?? "")
+    .replace(/\*\*(.+?)\*\*/gs, "$1")
+    .replace(/\*\*/g, "");
+}
 
 function addChatMessage(content, isUser = false, fillData = null) {
   const container = document.getElementById("chat-messages");
   const msgId = "msg-" + Date.now() + Math.random().toString(36).slice(2);
+  const renderedContent = renderChatContent(content);
   let messageHtml;
   if (isUser) {
-    messageHtml = `<div class="flex gap-3 justify-end"><div class="rounded-xl rounded-tr-none p-3 max-w-[85%] shadow-sm text-white" style="background: var(--blue);"><p class="text-sm">${content}</p></div></div>`;
+    messageHtml = `<div class="flex gap-3 justify-end"><div class="rounded-xl rounded-tr-none p-3 max-w-[85%] shadow-sm text-white" style="background: var(--blue);"><p class="text-sm whitespace-pre-wrap">${renderedContent}</p></div></div>`;
   } else {
     const hasFill = fillData && Object.keys(fillData).length > 0;
     const fillBtn = hasFill
@@ -662,7 +682,7 @@ function addChatMessage(content, isUser = false, fillData = null) {
     messageHtml = `<div class="flex gap-3" id="${msgId}">
 <div class="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 text-white text-xs font-bold" style="background: var(--navy);">IA</div>
 <div class="bg-white border border-gray-200 rounded-xl rounded-tl-none p-3 max-w-[85%] shadow-sm flex flex-col gap-2">
-<p class="text-sm text-gray-800 whitespace-pre-wrap">${content}</p>
+<div class="chat-message-content text-sm text-gray-800 whitespace-pre-wrap">${renderedContent}</div>
 <div class="flex gap-2 flex-wrap pt-2 border-t border-gray-100">
 <button class="btn-copy-msg text-xs bg-white hover:bg-gray-50 text-gray-600 border border-gray-200 px-2.5 py-1 rounded-md transition font-medium" data-msg-id="${msgId}" title="Copiar resposta">Copiar</button>
 ${fillBtn}
@@ -675,7 +695,7 @@ ${fillBtn}
   const copyBtn = container.querySelector(`[data-msg-id="${msgId}"].btn-copy-msg`);
   if (copyBtn) {
     copyBtn.addEventListener("click", () => {
-      navigator.clipboard.writeText(content).then(() => {
+      navigator.clipboard.writeText(plainChatContent(content)).then(() => {
         copyBtn.textContent = "Copiado";
         setTimeout(() => { copyBtn.textContent = "Copiar"; }, 2000);
       });
